@@ -1,0 +1,28 @@
+from pydantic import BaseModel
+
+class UserLogIn(BaseModel):
+    email: str
+    password: str
+    
+    class Config:
+        orm_mode = True 
+
+class UserResponse(BaseModel):
+    id: int
+    username: str
+    email: str
+    password: str
+    wallet: int
+    is_banned: bool
+
+    class Config:
+        orm_mode = True 
+
+class UserCreate(BaseModel):
+    username: str
+    email: str
+    password: str
+
+    class Config:
+        orm_mode = True 
+

@@ -1,0 +1,31 @@
+from typing import Annotated, Dict
+from fastapi import Depends
+
+from app.domain.models.user import User
+from app.domain.schemas.user_schema import UserCreate
+from app.infrastructure.repositories.user_repo import UserRepository
+from app.services.hash import HashPassword
+from app.services.base import BaseService
+
+class UserService(BaseService):
+    def __init__(
+        self,
+        user_repository: Annotated[UserRepository, Depends()],
+        hash_password: Annotated[HashPassword, Depends()],
+    ) -> None:
+        super().__init__()
+        self.user_repository = user_repository
+        self.hash_password = hash_password
+
+    async def create_user(self, user: UserCreate) -> User:
+        return self.user_repository.create_user(
+            User(
+                username=user.username,
+                last_name=user.email,
+                hashed_password=self.hash_password.get_password_hash(user.password),
+            )
+        )
+
+
+    async def get_user_by_email(self, email: str) -> User:
+        return self.user_repository.get_user_by_email(email)

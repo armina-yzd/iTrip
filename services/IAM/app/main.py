@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from app.core.db.database import in_db
-from app.api.users import router as users_router
+from services.IAM.app.api.users_api import router as users_router
 
 app = FastAPI()
 in_db()
