@@ -3,6 +3,8 @@ from typing import Annotated
 from datetime import datetime, timedelta
 from decouple import config
 from fastapi import Depends, HTTPException, status
+from dotenv import load_dotenv
+from pathlib import Path
 import jwt
 from fastapi.security import OAuth2PasswordBearer
 from app.services.base import BaseService
@@ -12,13 +14,16 @@ from app.services.user_service import UserService
 from app.domain.schemas.user_schema import UserLogIn
 from app.domain.models.user import User
 
-JWT_SECRET = config("SECRET_KEY", default="your-secret-key")
-JWT_ALGORITHM = config("ALGORITHM", default="HS256")
-REFRESH_SECRET = config("REFRESH_SECRET", default="your-refresh-secret")
+env_path = Path(__file__).parent.parent.parent / ".env"
+load_dotenv(env_path)
+
+JWT_SECRET : str = config("SECRET_KEY")
+JWT_ALGORITHM : str = config("ALGORITHM")
+REFRESH_SECRET : str = config("REFRESH_SECRET")
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 REFRESH_TOKEN_EXPIRE_DAYS = 7
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/users_api/userlogin")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/userlogin")
 
 
 class AuthService(BaseService):
@@ -113,7 +118,7 @@ async def get_current_user(
 
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
+        detail="Could not validate",
         headers={"WWW-Authenticate": "Bearer"},
     )
     try:
