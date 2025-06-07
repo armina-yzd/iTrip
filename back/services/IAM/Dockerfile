@@ -4,9 +4,10 @@ WORKDIR /app
 
 RUN pip install --upgrade pip
 
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+COPY ./requirements.txt /app/requirements.txt
 
-COPY . .
+RUN pip install --no-cache-dir --upgrade -r /app/requirements.txt
+
+COPY ./app /app/app
 
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]

@@ -8,4 +8,4 @@ app.include_router(users_router, prefix="/api")
 
 @app.get("/")
 def read_root():
-    return {"message": "Welcome to the FastAPI SQLAlchemy Demo!"}
+    return {"message": "Welcome to iTrip iam service!"}
