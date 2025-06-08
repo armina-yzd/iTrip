@@ -3,8 +3,6 @@ from typing import Annotated
 from datetime import datetime, timedelta
 from decouple import config
 from fastapi import Depends, HTTPException, status
-from dotenv import load_dotenv
-from pathlib import Path
 import jwt
 from fastapi.security import OAuth2PasswordBearer
 from app.services.base import BaseService
@@ -17,16 +15,20 @@ from app.domain.schemas.admin_schema import AdminLogIn
 from app.domain.models.user import User
 from app.domain.models.admin import Admin
 
-env_path = Path(__file__).parent.parent.parent / ".env"
-load_dotenv(env_path)
-
 JWT_SECRET : str = config("SECRET_KEY")
 JWT_ALGORITHM : str = config("ALGORITHM")
 REFRESH_SECRET : str = config("REFRESH_SECRET")
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 REFRESH_TOKEN_EXPIRE_DAYS = 7
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/userlogin")
+oauth2_scheme_admin = OAuth2PasswordBearer(
+    tokenUrl="/api/admin/login",
+    scheme_name="admin_oauth2_schema"
+)
+oauth2_scheme_user = OAuth2PasswordBearer(
+    tokenUrl="/api/user/login",
+    scheme_name="candidate_oauth2_schema"
+)
 
 
 class AuthService(BaseService):
@@ -76,17 +78,17 @@ class AuthService(BaseService):
         except:
             raise HTTPException(status_code=401, detail="Invalid refresh token")
     
-    def create_tokens(self, email: str) -> Token:
+    def create_tokens(self, email: str, role: str) -> Token:
         access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
         refresh_token_expires = timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
         
         access_token = self.create_access_token(
-            data={"sub": email},
+            data={"sub": email,"role":role},
             expires_delta=access_token_expires
         )
         
         refresh_token = self.create_refresh_token(
-            data={"sub": email},
+            data={"sub": email,"role": role},
             expires_delta=refresh_token_expires
         )
         
@@ -113,7 +115,7 @@ class AuthService(BaseService):
                 detail="Incorrect username or password",
                 headers={"WWW-Authenticate": "Bearer"},
             )
-        return self.create_tokens(user.email)
+        return self.create_tokens(user.email,"user")
     
     async def authenticate_admin(self, admin: AdminLogIn) -> Token:
         founded_admin = await self.admin_service.get_admin_by_email(
@@ -132,11 +134,11 @@ class AuthService(BaseService):
                 detail="Incorrect username or password",
                 headers={"WWW-Authenticate": "Bearer"},
             )
-        return self.create_tokens(admin.email)
+        return self.create_tokens(admin.email,"admin")
 
 
 async def get_current_user(
-        token: Annotated[str, Depends(oauth2_scheme)],
+        token: Annotated[str, Depends(oauth2_scheme_user)],
         user_service: Annotated[UserService, Depends()],
         ) -> User:
 
@@ -148,7 +150,8 @@ async def get_current_user(
     try:
         payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
         email: str = payload.get("sub")
-        if email is None:
+        role: str = payload.get("role")
+        if email is None or role != "user":
             raise credentials_exception
         token_data = TokenData(email=email)
     except :
@@ -161,7 +164,7 @@ async def get_current_user(
     return user
 
 async def get_current_admin(
-        token: Annotated[str, Depends(oauth2_scheme)],
+        token: Annotated[str, Depends(oauth2_scheme_admin)],
         admin_service: Annotated[AdminService, Depends()],
         ) -> Admin:
 
@@ -173,7 +176,8 @@ async def get_current_admin(
     try:
         payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
         email: str = payload.get("sub")
-        if email is None:
+        role: str = payload.get("role")
+        if email is None or role != "admin":
             raise credentials_exception
         token_data = TokenData(email=email)
     except :

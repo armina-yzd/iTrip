@@ -12,12 +12,12 @@ from app.domain.schemas.admin_schema import (
 )
 from app.domain.schemas.token_schema import Token
 from app.core.db.database import get_db
-from app.services.auth.auth import AuthService, get_current_admin
+from app.services.auth.auth import AuthService , get_current_admin
 from app.services.auth.hash import HashPassword
 
-router = APIRouter()
+router = APIRouter(prefix="/admin", tags=["Admin"])
 
-@router.post("/adminlogin", response_model=Token)
+@router.post("/login", response_model=Token)
 async def login(
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
     auth_service: Annotated[AuthService, Depends()],
@@ -26,7 +26,7 @@ async def login(
         AdminLogIn(email=form_data.username, password=form_data.password)
     )
 
-@router.get("/adminme", response_model=AdminResponse)
+@router.get("/me", response_model=AdminResponse)
 async def get_me(user: Admin = Depends(get_current_admin)):
     return user
 

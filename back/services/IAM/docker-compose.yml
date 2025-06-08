@@ -10,6 +10,11 @@ services:
       - SECRET_KEY=${SECRET_KEY}
       - ALGORITHM=${ALGORITHM}
       - REFRESH_SECRET=${REFRESH_SECRET}
+      - OTP_EXPIRE_TIME=${OTP_EXPIRE_TIME}
+      - SMTP_SERVER=${SMTP_SERVER}
+      - SMTP_PORT=${SMTP_PORT}
+      - SMTP_USERNAME=${SMTP_USERNAME}
+      - SMTP_PASSWORD=${SMTP_PASSWORD}
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.iam.rule=Host(`iam.localhost`)"

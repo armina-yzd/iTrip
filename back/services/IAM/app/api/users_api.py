@@ -15,12 +15,12 @@ from app.domain.schemas.user_schema import (
 )
 from app.domain.schemas.token_schema import Token
 from app.core.db.database import get_db
-from app.services.auth.auth import AuthService, get_current_user
+from app.services.auth.auth import AuthService , get_current_user
 from app.services.user.register_service import RegisterService
 
-router = APIRouter()
+router = APIRouter(prefix="/user", tags=["User"])
 
-@router.post("/userlogin", response_model=Token)
+@router.post("/login", response_model=Token)
 async def login(
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
     auth_service: Annotated[AuthService, Depends()],
