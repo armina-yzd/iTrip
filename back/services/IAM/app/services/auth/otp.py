@@ -16,11 +16,11 @@ from fastapi import status
 env_path = Path(__file__).parent.parent.parent / ".env"
 load_dotenv(env_path)
 
-OTP_EXPIRE_TIME: str = config("OTP_EXPIRE_TIME", default=300)
-SMTP_SERVER: str = config("SMTP_SERVER")
-SMTP_PORT: int = config("SMTP_PORT")
-SMTP_USERNAME: str = config("SMTP_USERNAME")
-SMTP_PASSWORD: str = config("SMTP_PASSWORD")
+OTP_EXPIRE_TIME: str = config("OTP_EXPIRE_TIME")
+SMTP_SERVER: str = config("SMTP_SERVER")  
+SMTP_PORT: int = config("SMTP_PORT")  
+SMTP_USERNAME: str = config("SMTP_USERNAME") 
+SMTP_PASSWORD: str = config("SMTP_PASSWORD") 
 
 class OTPService(BaseService):
     def __init__(

@@ -1,4 +1,3 @@
-from app.services.base import BaseService
 from passlib.context import CryptContext
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")

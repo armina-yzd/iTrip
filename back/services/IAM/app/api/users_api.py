@@ -7,7 +7,6 @@ from fastapi.security import OAuth2PasswordRequestForm
 from app.domain.models.user import User
 from app.domain.schemas.user_schema import (
     UserResponse,
-    UserCreate,
     UserLogIn,
     UserResponseOtp,
     UserOtp,
@@ -16,9 +15,8 @@ from app.domain.schemas.user_schema import (
 )
 from app.domain.schemas.token_schema import Token
 from app.core.db.database import get_db
-from app.services.auth import AuthService, get_current_user
-from app.services.hash import HashPassword
-from app.services.register_service import RegisterService
+from app.services.auth.auth import AuthService, get_current_user
+from app.services.user.register_service import RegisterService
 
 router = APIRouter()
 
@@ -47,25 +45,6 @@ async def create_user(
     verify_user: Annotated[RegisterService, Depends()]
 ):
     return await verify_user.verify_user(user)
-
-@router.post("/users/", response_model=UserResponse)
-def create_user1(
-    user: UserCreate, 
-    hash_service: Annotated[HashPassword, Depends()],
-    db: Annotated[Session, Depends(get_db)],
-):
-    user_data = user.dict()
-    hashed_password = hash_service.get_password_hash(user_data.pop('password'))
-
-    db_user = User(
-        **user_data,
-        password = hashed_password 
-    )
-    
-    db.add(db_user)
-    db.commit()
-    db.refresh(db_user)
-    return db_user
 
 # Get all users
 @router.get("/users/", response_model=List[UserResponse])

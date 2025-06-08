@@ -2,9 +2,9 @@ from typing import Annotated, Dict
 from fastapi import Depends
 
 from app.domain.models.user import User
-from app.domain.schemas.user_schema import UserCreate,VerifyOtp
+from app.domain.schemas.user_schema import VerifyOtp
 from app.infrastructure.repositories.user_repo import UserRepository
-from app.services.hash import HashPassword
+from app.services.auth.hash import HashPassword
 from app.services.base import BaseService
 
 class UserService(BaseService):

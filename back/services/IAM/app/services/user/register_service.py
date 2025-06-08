@@ -8,10 +8,10 @@ from app.domain.schemas.user_schema import (
     VerifyOtp,
     VerifyOtpResponse
 )
-from app.services.auth import AuthService
-from app.services.otp import OTPService
+from app.services.auth.auth import AuthService
+from app.services.auth.otp import OTPService
 from app.services.base import BaseService
-from app.services.user_service import UserService
+from app.services.user.user_service import UserService
 
 
 class RegisterService(BaseService):

@@ -9,10 +9,13 @@ import jwt
 from fastapi.security import OAuth2PasswordBearer
 from app.services.base import BaseService
 from app.domain.schemas.token_schema import Token,TokenData
-from app.services.hash import HashPassword
-from app.services.user_service import UserService
+from app.services.auth.hash import HashPassword
+from app.services.user.user_service import UserService
+from app.services.admin.admin_service import AdminService
 from app.domain.schemas.user_schema import UserLogIn
+from app.domain.schemas.admin_schema import AdminLogIn
 from app.domain.models.user import User
+from app.domain.models.admin import Admin
 
 env_path = Path(__file__).parent.parent.parent / ".env"
 load_dotenv(env_path)
@@ -30,11 +33,13 @@ class AuthService(BaseService):
     def __init__(
             self,
             hash_service: Annotated[HashPassword, Depends()],
-            user_service: Annotated[UserService, Depends()]
+            user_service: Annotated[UserService, Depends()],
+            admin_service:  Annotated[AdminService, Depends()],
             ) -> None:
         super().__init__()
         self.hash_service = hash_service
         self.user_service = user_service
+        self.admin_service = admin_service
     
     def create_access_token(self, data: dict, expires_delta: Optional[timedelta] = None) -> str:
         to_encode = data.copy()
@@ -109,6 +114,25 @@ class AuthService(BaseService):
                 headers={"WWW-Authenticate": "Bearer"},
             )
         return self.create_tokens(user.email)
+    
+    async def authenticate_admin(self, admin: AdminLogIn) -> Token:
+        founded_admin = await self.admin_service.get_admin_by_email(
+            admin.email
+        )
+        if not founded_admin:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, detail="Admin does not exist"
+            )
+        
+        if not self.hash_service.verify_password(
+            admin.password, founded_admin.password
+        ):
+           raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Incorrect username or password",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+        return self.create_tokens(admin.email)
 
 
 async def get_current_user(
@@ -135,4 +159,29 @@ async def get_current_user(
         raise credentials_exception
         
     return user
+
+async def get_current_admin(
+        token: Annotated[str, Depends(oauth2_scheme)],
+        admin_service: Annotated[AdminService, Depends()],
+        ) -> Admin:
+
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        email: str = payload.get("sub")
+        if email is None:
+            raise credentials_exception
+        token_data = TokenData(email=email)
+    except :
+        raise credentials_exception
+        
+    admin = await admin_service.get_admin_by_email(token_data.email)
+    if admin is None:
+        raise credentials_exception
+        
+    return admin
     
