@@ -31,3 +31,6 @@ class UserService():
     
     async def get_user_by_username(self, username: str) -> User:
         return self.user_repository.get_user_by_username(username)
+    
+    async def get_banned_user(self, email: str) -> User:
+        return self.user_repository.get_banned_user(email)

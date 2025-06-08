@@ -9,10 +9,13 @@ from app.domain.schemas.token_schema import Token,TokenData
 from app.services.auth.hash import HashPassword
 from app.services.user.user_service import UserService
 from app.services.admin.admin_service import AdminService
+from app.services.company.company_service import CompanyService
 from app.domain.schemas.user_schema import UserLogIn
 from app.domain.schemas.admin_schema import AdminLogIn
+from app.domain.schemas.company_schema import CompanyLogIn
 from app.domain.models.user import User
 from app.domain.models.admin import Admin
+from app.domain.models.company import Company
 
 JWT_SECRET : str = config("SECRET_KEY")
 JWT_ALGORITHM : str = config("ALGORITHM")
@@ -28,6 +31,10 @@ oauth2_scheme_user = OAuth2PasswordBearer(
     tokenUrl="/api/user/login",
     scheme_name="candidate_oauth2_schema"
 )
+oauth2_scheme_company = OAuth2PasswordBearer(
+    tokenUrl="/api/company/login",
+    scheme_name="company_oauth2_schema"
+)
 
 
 class AuthService():
@@ -36,11 +43,13 @@ class AuthService():
             hash_service: Annotated[HashPassword, Depends()],
             user_service: Annotated[UserService, Depends()],
             admin_service:  Annotated[AdminService, Depends()],
+            company_service: Annotated[CompanyService, Depends()]
             ) -> None:
         super().__init__()
         self.hash_service = hash_service
         self.user_service = user_service
         self.admin_service = admin_service
+        self.company_service = company_service
     
     def create_access_token(self, data: dict, expires_delta: Optional[timedelta] = None) -> str:
         to_encode = data.copy()
@@ -114,6 +123,13 @@ class AuthService():
                 detail="Incorrect username or password",
                 headers={"WWW-Authenticate": "Bearer"},
             )
+        banned_user = await self.user_service.get_banned_user(
+            user.email
+        )
+        if banned_user:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, detail="User is banned"
+            )
         return self.create_tokens(user.email,"user")
     
     async def authenticate_admin(self, admin: AdminLogIn) -> Token:
@@ -134,6 +150,42 @@ class AuthService():
                 headers={"WWW-Authenticate": "Bearer"},
             )
         return self.create_tokens(admin.email,"admin")
+    
+    async def authenticate_company(self, company: CompanyLogIn) -> Token:
+        founded_company = await self.company_service.get_company_by_email(
+            company.email
+        )
+        if not founded_company:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, detail="Company does not exist"
+            )
+        
+        if not self.hash_service.verify_password(
+            company.password, founded_company.password
+        ):
+           raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Incorrect username or password",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+        
+        banned_company = await self.company_service.get_banned_company(
+            company.email
+        )
+        if banned_company:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, detail="Company is banned"
+            )
+        
+        unverified_company = await self.company_service.get_unverified_company(
+            company.email
+        )
+        if not unverified_company:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, detail="Company is not verified"
+            )
+        
+        return self.create_tokens(company.email,"company")
 
 
 async def get_current_user(
@@ -187,4 +239,30 @@ async def get_current_admin(
         raise credentials_exception
         
     return admin
-    
+
+
+async def get_current_company(
+        token: Annotated[str, Depends(oauth2_scheme_company)],
+        company_service: Annotated[CompanyService, Depends()],
+        ) -> Company:
+
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        email: str = payload.get("sub")
+        role: str = payload.get("role")
+        if email is None or role != "company":
+            raise credentials_exception
+        token_data = TokenData(email=email)
+    except :
+        raise credentials_exception
+        
+    company = await company_service.get_company_by_email(token_data.email)
+    if company is None:
+        raise credentials_exception
+        
+    return company

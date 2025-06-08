@@ -3,9 +3,6 @@ from pydantic import BaseModel
 class UserLogIn(BaseModel):
     email: str
     password: str
-    
-    class Config:
-        orm_mode = True 
 
 class UserResponse(BaseModel):
     id: int
@@ -15,40 +12,25 @@ class UserResponse(BaseModel):
     wallet: int
     is_banned: bool
 
-    class Config:
-        orm_mode = True 
-
 class UserCreate(BaseModel):
     username: str
     email: str
     password: str
-
-    class Config:
-        orm_mode = True 
 
 class UserResponseOtp(BaseModel):
     email: str
     message: str
 
 class UserOtp(BaseModel):
-    email: str
     username: str
     email: str
     password: str
-
-    class Config:
-        orm_mode = True 
 
 class VerifyOtp(BaseModel):
     username: str
     email: str
     password: str
     otp: str
-
-    class Config:
-        orm_mode = True 
-
-    
 
 class VerifyOtpResponse(BaseModel):
     verify: bool

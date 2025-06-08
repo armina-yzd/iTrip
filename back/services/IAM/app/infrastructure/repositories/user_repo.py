@@ -19,3 +19,6 @@ class UserRepository:
     
     def get_user_by_username(self, username: str) -> User:
         return self.db.query(User).filter(User.username == username).first()
+    
+    def get_banned_user(self, email: str) -> User:
+        return self.db.query(User).filter(User.email == email, User.is_banned).first()
