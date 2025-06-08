@@ -3,9 +3,8 @@ from fastapi import Depends
 
 from app.domain.models.admin import Admin
 from app.infrastructure.repositories.admin_repo import AdminRepository
-from app.services.base import BaseService
 
-class AdminService(BaseService):
+class AdminService():
     def __init__(
         self,
         admin_repository: Annotated[AdminRepository, Depends()]

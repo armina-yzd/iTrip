@@ -10,11 +10,8 @@ from decouple import config
 from dotenv import load_dotenv
 from pathlib import Path
 from app.core.redis.redis import get_redis
-from app.services.base import BaseService
 from fastapi import status
 
-env_path = Path(__file__).parent.parent.parent / ".env"
-load_dotenv(env_path)
 
 OTP_EXPIRE_TIME: str = config("OTP_EXPIRE_TIME")
 SMTP_SERVER: str = config("SMTP_SERVER")  
@@ -22,7 +19,7 @@ SMTP_PORT: int = config("SMTP_PORT")
 SMTP_USERNAME: str = config("SMTP_USERNAME") 
 SMTP_PASSWORD: str = config("SMTP_PASSWORD") 
 
-class OTPService(BaseService):
+class OTPService():
     def __init__(
         self, redis: Annotated[Redis, Depends(get_redis)]
     ) -> None:

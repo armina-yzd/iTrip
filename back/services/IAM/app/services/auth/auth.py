@@ -5,7 +5,6 @@ from decouple import config
 from fastapi import Depends, HTTPException, status
 import jwt
 from fastapi.security import OAuth2PasswordBearer
-from app.services.base import BaseService
 from app.domain.schemas.token_schema import Token,TokenData
 from app.services.auth.hash import HashPassword
 from app.services.user.user_service import UserService
@@ -31,7 +30,7 @@ oauth2_scheme_user = OAuth2PasswordBearer(
 )
 
 
-class AuthService(BaseService):
+class AuthService():
     def __init__(
             self,
             hash_service: Annotated[HashPassword, Depends()],

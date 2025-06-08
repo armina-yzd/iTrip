@@ -10,11 +10,10 @@ from app.domain.schemas.user_schema import (
 )
 from app.services.auth.auth import AuthService
 from app.services.auth.otp import OTPService
-from app.services.base import BaseService
 from app.services.user.user_service import UserService
 
 
-class RegisterService(BaseService):
+class RegisterService():
     def __init__(
         self,
         user_service: Annotated[UserService, Depends()],
