@@ -28,7 +28,7 @@ class UserCreate(BaseModel):
 
 class UserResponseOtp(BaseModel):
     email: str
-    otp: str
+    message: str
 
 class UserOtp(BaseModel):
     email: str

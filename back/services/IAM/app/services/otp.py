@@ -11,6 +11,7 @@ from dotenv import load_dotenv
 from pathlib import Path
 from app.core.redis.redis import get_redis
 from app.services.base import BaseService
+from fastapi import status
 
 env_path = Path(__file__).parent.parent.parent / ".env"
 load_dotenv(env_path)

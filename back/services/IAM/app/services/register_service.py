@@ -50,7 +50,7 @@ class RegisterService(BaseService):
 
         return UserResponseOtp(
             email=user.email,
-            otp=otp,
+            message="OTP Send",
         )
 
     async def verify_user(self, verify_user: VerifyOtp) -> VerifyOtpResponse:
