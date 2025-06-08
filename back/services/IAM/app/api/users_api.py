@@ -5,11 +5,20 @@ from typing import List
 from fastapi.security import OAuth2PasswordRequestForm
 
 from app.domain.models.user import User
-from app.domain.schemas.user_schema import UserResponse,UserCreate,UserLogIn
+from app.domain.schemas.user_schema import (
+    UserResponse,
+    UserCreate,
+    UserLogIn,
+    UserResponseOtp,
+    UserOtp,
+    VerifyOtp,
+    VerifyOtpResponse
+)
 from app.domain.schemas.token_schema import Token
 from app.core.db.database import get_db
 from app.services.auth import AuthService, get_current_user
 from app.services.hash import HashPassword
+from app.services.register_service import RegisterService
 
 router = APIRouter()
 
@@ -26,8 +35,21 @@ async def login(
 async def get_me(user: User = Depends(get_current_user)):
     return user
 
+@router.post("/sendOtp/", response_model=UserResponseOtp)
+async def send_otp(
+    user: UserOtp,  user_otp: Annotated[RegisterService, Depends()]
+):
+    return await user_otp.user_otp(user)
+
+@router.post("/creatUser/", response_model=VerifyOtpResponse)
+async def create_user(
+    user: VerifyOtp, 
+    verify_user: Annotated[RegisterService, Depends()]
+):
+    return await verify_user.verify_user(user)
+
 @router.post("/users/", response_model=UserResponse)
-def create_user(
+def create_user1(
     user: UserCreate, 
     hash_service: Annotated[HashPassword, Depends()],
     db: Annotated[Session, Depends(get_db)],
