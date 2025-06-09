@@ -34,6 +34,6 @@ class CompanyService():
     async def get_banned_company(self, email: str) -> Company:
         return self.company_repository.get_banned_company(email)
 
-    async def get_unverified_company(self, email: str) -> Company:
-        return self.company_repository.get_unverified_company(email)
+    async def get_verified_company(self, email: str) -> Company:
+        return self.company_repository.get_verified_company(email)
     

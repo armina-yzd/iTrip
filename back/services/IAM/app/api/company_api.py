@@ -11,12 +11,14 @@ from app.domain.schemas.company_schema import (
     CompanyResponseOtp,
     CompanyOtp,
     VerifyOtp,
-    VerifyOtpResponse
+    VerifyOtpResponse,
+    VerifyEmailResponse
 )
 from app.domain.schemas.token_schema import Token
 from app.core.db.database import get_db
 from app.services.auth.auth import AuthService , get_current_company
 from app.services.company.company_register import CompanyRegister
+from app.services.company.company_service import CompanyService
 
 router = APIRouter(prefix="/company", tags=["Company"])
 
@@ -62,3 +64,23 @@ def delete_company(company_id: int, db: Session = Depends(get_db)):
     db.delete(company)
     db.commit()
     return {"message": "Company deleted successfully"}
+
+
+@router.post(
+    "/verify-email",
+    response_model=VerifyEmailResponse
+)
+async def verify_company_email(
+    email: str,
+    company_service: Annotated[CompanyService, Depends()],
+    db: Session = Depends(get_db),
+):
+    current_company = await company_service.get_company_by_email(email)
+    current_company.is_verified = True
+    db.commit()
+    db.refresh(current_company)
+    
+    return {
+        "message": "Company email verified successfully",
+        "company": current_company
+    }

@@ -23,5 +23,5 @@ class CompanyRepository:
     def get_banned_company(self, email: str) -> Company:
         return self.db.query(Company).filter(Company.email == email, Company.is_banned).first()
     
-    def get_unverified_company(self, email: str) -> Company:
-        return self.db.query(Company).filter(Company.email == email, not Company.is_verified).first()
+    def get_verified_company(self, email: str) -> Company:
+        return self.db.query(Company).filter(Company.email == email, Company.is_verified).first()

@@ -177,10 +177,10 @@ class AuthService():
                 status_code=status.HTTP_400_BAD_REQUEST, detail="Company is banned"
             )
         
-        unverified_company = await self.company_service.get_unverified_company(
+        verified_company = await self.company_service.get_verified_company(
             company.email
         )
-        if not unverified_company:
+        if not verified_company:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST, detail="Company is not verified"
             )

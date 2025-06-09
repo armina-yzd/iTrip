@@ -36,3 +36,7 @@ class VerifyOtpResponse(BaseModel):
     verify: bool
     message: str
 
+class VerifyEmailResponse(BaseModel):
+    message: str
+    company: CompanyResponse
+

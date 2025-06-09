@@ -3,6 +3,6 @@ __pycache__/
 *.env
 *.env.*
 env.*
-
+redis.conf/
 node_modules/
 letsencrypt/
