@@ -6,3 +6,6 @@ env.*
 redis.conf/
 node_modules/
 letsencrypt/
+data/
+dump.rdb
+*.rdb
