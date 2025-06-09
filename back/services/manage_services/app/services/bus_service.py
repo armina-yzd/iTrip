@@ -2,10 +2,7 @@ from typing import Annotated, Dict
 from fastapi import Depends
 
 from app.domain.schemas.services_schema import (
-    BusCreate,
-    TrainCreate,
-    TourCreate,
-    AirplainCreate
+    BusCreate
 )
 from app.domain.models.bus_service import BusService
 from app.infrastructure.repositories.bus_repo import BusServiceRepository
@@ -36,11 +33,5 @@ class BusSService():
         )
 
 
-    # async def get_user_by_email(self, email: str) -> User:
-    #     return self.user_repository.get_user_by_email(email)
-    
-    # async def get_user_by_username(self, username: str) -> User:
-    #     return self.user_repository.get_user_by_username(username)
-    
-    # async def get_banned_user(self, email: str) -> User:
-    #     return self.user_repository.get_banned_user(email)
+    async def get_service_by_company_id(self, id: int) -> list[BusService]:
+        return self.bus_service_repository.get_service_by_company_id(id)
