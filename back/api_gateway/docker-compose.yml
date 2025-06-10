@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  traefik:
+    image: traefik:v2.5
+    container_name: traefik
+    command:
+      - "--api.insecure=true"  # Enable Traefik dashboard
+      - "--providers.docker=true"  # Enable Docker provider
+      - "--entrypoints.web.address=:80"  # Define HTTP entrypoint
+      - "--api.dashboard=true"  # Explicitly enable dashboard
+
+    ports:
+      - "80:80"  # Expose HTTP port
+      - "8080:8080"  # Expose Traefik dashboard
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.dashboard.rule=Host(`traefik.localhost`)"
+      - "traefik.http.routers.dashboard.service=api@internal"
+      - "traefik.http.routers.dashboard.entrypoints=web"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"  # Docker socket for service discovery
+      - "./letsencrypt:/letsencrypt"  # Volume for certificates storage
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+    letsencrypt:
+      driver: local
