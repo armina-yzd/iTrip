@@ -3,6 +3,7 @@ from fastapi import Depends
 from sqlalchemy.orm import Session
 from app.core.db.database import get_db
 from app.domain.models.ticket import Ticket
+from app.domain.models.pay import Pay
 
 class TicketRepository:
     def __init__(self, db: Annotated[Session, Depends(get_db)]):
@@ -13,3 +14,6 @@ class TicketRepository:
         self.db.commit()
         self.db.refresh(ticket)
         return ticket
+    
+    def ticket_count(self, service_id: int) -> int:
+        return self.db.query(Ticket).join(Pay, Ticket.pay_id == Pay.id).filter(Pay.service_id == service_id).count()
