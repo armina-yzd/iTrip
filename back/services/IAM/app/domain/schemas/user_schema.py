@@ -36,4 +36,6 @@ class VerifyOtpResponse(BaseModel):
     verify: bool
     message: str
 
-
+class WalletUpdateRequest(BaseModel):
+    new_wallet: int
+    secret_code: str

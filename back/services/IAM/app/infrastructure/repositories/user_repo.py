@@ -22,3 +22,13 @@ class UserRepository:
     
     def get_banned_user(self, email: str) -> User:
         return self.db.query(User).filter(User.email == email, User.is_banned).first()
+    
+    def change_user_wallet(self, id: int, new_wallet: int) -> User:
+        user = self.db.query(User).filter(User.id == id).first()
+        if user:
+            user.wallet = new_wallet
+            self.db.commit()
+            self.db.refresh(user)
+        return user
+
+    

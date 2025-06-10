@@ -1,8 +1,9 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException,status
 from typing import Annotated
 from sqlalchemy.orm import Session
 from typing import List
 from fastapi.security import OAuth2PasswordRequestForm
+from decouple import config
 
 from app.domain.models.user import User
 from app.domain.schemas.user_schema import (
@@ -11,14 +12,17 @@ from app.domain.schemas.user_schema import (
     UserResponseOtp,
     UserOtp,
     VerifyOtp,
-    VerifyOtpResponse
+    VerifyOtpResponse,
+    WalletUpdateRequest
 )
 from app.domain.schemas.token_schema import Token
 from app.core.db.database import get_db
 from app.services.auth.auth import AuthService , get_current_user
 from app.services.user.register_service import RegisterService
+from app.services.user.user_service import UserService
 
 router = APIRouter(prefix="/user", tags=["User"])
+SECRET : str = config("SECRET")
 
 @router.post("/login", response_model=Token)
 async def login(
@@ -45,6 +49,19 @@ async def create_user(
     verify_user: Annotated[RegisterService, Depends()]
 ):
     return await verify_user.verify_user(user)
+
+@router.post("/wallet/{user_id}", response_model=UserResponse)
+async def change_wallet(
+    user_id: int,
+    request: WalletUpdateRequest,
+    user_service: Annotated[UserService, Depends()]
+    ):
+    if request.secret_code != SECRET:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, 
+            detail="Not Allowed"
+        )
+    return await user_service.change_user_wallet(user_id,request.new_wallet)
 
 # Get all users
 @router.get("/users/", response_model=List[UserResponse])

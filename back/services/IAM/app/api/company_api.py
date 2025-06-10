@@ -48,6 +48,7 @@ async def create_company(
 ):
     return await verify_company.verify_company(company)
 
+
 # Get all users
 @router.get("/companies/", response_model=List[CompanyResponse])
 def get_companiess(db: Session = Depends(get_db)):

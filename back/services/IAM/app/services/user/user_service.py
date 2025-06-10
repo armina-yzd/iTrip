@@ -1,5 +1,5 @@
 from typing import Annotated, Dict
-from fastapi import Depends
+from fastapi import Depends, HTTPException,status
 
 from app.domain.models.user import User
 from app.domain.schemas.user_schema import VerifyOtp
@@ -34,3 +34,11 @@ class UserService():
     
     async def get_banned_user(self, email: str) -> User:
         return self.user_repository.get_banned_user(email)
+    
+    async def change_user_wallet(self, id:int, new_wallet:int) -> User:
+        if new_wallet<0:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, 
+                detail="wallet cant be less than zero"
+            )
+        return self.user_repository.change_user_wallet(id,new_wallet)
