@@ -4,7 +4,7 @@ services:
   user_ticket:
     container_name: user_ticket
     build: 
-      context: ../back/services/user_ticket
+      context: ../services/user_ticket
       dockerfile: Dockerfile
     environment:
       - DATABASE_URL=${DATABASE_URL}

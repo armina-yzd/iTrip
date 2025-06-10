@@ -1,22 +1,32 @@
 version: '3.8'
 
 services:
-  manage_services:
-    container_name: manage_services
+  iam:
+    container_name: iam
     build: 
-      context: ../back/services/manage_services
+      context: ../services/iam
       dockerfile: Dockerfile
     environment:
       - DATABASE_URL=${DATABASE_URL}
-      - IAM_URL=${IAM_URL}
+      - SECRET_KEY=${SECRET_KEY}
+      - ALGORITHM=${ALGORITHM}
+      - REFRESH_SECRET=${REFRESH_SECRET}
+      - OTP_EXPIRE_TIME=${OTP_EXPIRE_TIME}
+      - SMTP_SERVER=${SMTP_SERVER}
+      - SMTP_PORT=${SMTP_PORT}
+      - SMTP_USERNAME=${SMTP_USERNAME}
+      - SMTP_PASSWORD=${SMTP_PASSWORD}
+      - SECRET=${SECRET}
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.manage_services.rule=Host(`manage_services.localhost`)"
-      - "traefik.http.routers.manage_services.entrypoints=web"
-      - "traefik.http.services.manage_services.loadbalancer.server.port=8000"
+      - "traefik.http.routers.iam.rule=Host(`iam.localhost`)"
+      - "traefik.http.routers.iam.entrypoints=web"
+      - "traefik.http.services.iam.loadbalancer.server.port=8000"
     networks:
       - app-network 
     depends_on:
+      redis:
+        condition: service_healthy
       postgres_container:
         condition: service_healthy
       
@@ -54,6 +64,24 @@ services:
     depends_on:
       postgres_container:
         condition: service_healthy
+    restart: unless-stopped
+
+  redis:
+    image: redis
+    container_name: redis_iam
+    command: redis-server /usr/local/etc/redis/redis.conf
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./data:/data
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
+    networks:
+      - app-network
+    healthcheck: 
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
     restart: unless-stopped
 
 networks:
