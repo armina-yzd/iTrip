@@ -31,12 +31,15 @@ class PassengerResponse(BaseModel):
 
 class PaymentCreate(BaseModel):
     discount_id: int
+    service_type: ServiceType
     paid: int 
     ticket_num : int
     purchase_method: PurchaseMethod
 
 class PaymentResponse(BaseModel):
     id: int
+    service_id: int
+    service_type: ServiceType
     discount_id: int
     paid: int 
     ticket_num: int
@@ -48,25 +51,20 @@ class TicketCreate(BaseModel):
     ticket_serial: int
     tracking_code: int
     seat_num: int
-    service_type: ServiceType
 
 class TicketResponse(BaseModel):
     id: int
-    service_id: int
     user_id: int
     passenger_id: int
     pay_id: int
     ticket_serial: int
     tracking_code: int
     seat_num: int
-    service_type: ServiceType
 
 class BuyTicketCreate(BaseModel):
     ticket_create: TicketCreate
-    # payment_create: PaymentCreate
     passenger_create: PassengerCreate
 
 class BuyTicketResponse(BaseModel):
     ticket_response: TicketResponse
-    # payment_response: PaymentResponse
     passenger_response: PassengerResponse

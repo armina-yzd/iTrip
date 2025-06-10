@@ -13,3 +13,7 @@ class PaymentRepository:
         self.db.commit()
         self.db.refresh(payment)
         return payment
+    
+    def get_ticket_count(self, id: int) -> int:
+        payment:Pay = self.db.query(Pay).filter(Pay.id == id).first()
+        return payment.ticket_num

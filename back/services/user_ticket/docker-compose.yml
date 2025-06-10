@@ -10,6 +10,7 @@ services:
       - DATABASE_URL=${DATABASE_URL}
       - IAM_URL=${IAM_URL}
       - SECRET=${SECRET}
+      - MANAGE_SERVICES_URL=${MANAGE_SERVICES_URL}
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.user_ticket.rule=Host(`userticket.localhost`)"

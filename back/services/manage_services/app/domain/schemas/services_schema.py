@@ -112,3 +112,7 @@ class FilterService(BaseModel):
     from_location: str
     to_location: str
     start_date: date
+
+class GetInfo(BaseModel):
+    id: int
+    service_type: str

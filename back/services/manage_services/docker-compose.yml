@@ -11,7 +11,7 @@ services:
       - IAM_URL=${IAM_URL}
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.manage_services.rule=Host(`manageServices.localhost`)"
+      - "traefik.http.routers.manage_services.rule=Host(`manage_services.localhost`)"
       - "traefik.http.routers.manage_services.entrypoints=web"
       - "traefik.http.services.manage_services.loadbalancer.server.port=8000"
     networks:
