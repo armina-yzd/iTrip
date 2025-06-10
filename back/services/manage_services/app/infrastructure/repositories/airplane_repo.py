@@ -1,3 +1,4 @@
+from datetime import date
 from typing import Annotated
 from fastapi import Depends
 from sqlalchemy.orm import Session
@@ -16,3 +17,8 @@ class AirplaneServiceRepository:
     
     def get_service_by_company_id(self, id: int) -> list[AirplaneService]:
         return self.db.query(AirplaneService).filter(AirplaneService.company_id == id).all()
+    
+    def filter_service_by_place_and_date(self,from_location:str,to_location:str, start_date:date) -> list[AirplaneService]:
+        return self.db.query(AirplaneService).filter(AirplaneService.from_location == from_location,
+                                                AirplaneService.to_location==to_location,
+                                                AirplaneService.start_date==start_date).all()

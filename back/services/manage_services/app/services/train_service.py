@@ -1,3 +1,4 @@
+from datetime import date
 from typing import Annotated, Dict
 from fastapi import Depends
 
@@ -35,3 +36,7 @@ class TrainSService():
     
     async def get_service_by_company_id(self, id: int) -> list[TrainService]:
         return self.train_service_repository.get_service_by_company_id(id)
+    
+    async def filter_service_by_place_and_date(self,from_location:str,to_location:str, start_date:date) -> list[TrainService]:
+        return self.train_service_repository.filter_service_by_place_and_date(from_location,to_location,start_date)
+
