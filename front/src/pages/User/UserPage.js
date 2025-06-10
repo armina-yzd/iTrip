@@ -14,9 +14,9 @@ import {
   FaXTwitter,
   FaWhatsapp,
 } from "react-icons/fa6";
-import "./HomePage.css";
+import "./UserPage.css";
 
-export default function HomePage() {
+export default function UserPage() {
   const navigate = useNavigate();
   const [showTripType, setShowTripType] = useState(false);
   const [tripType, setTripType] = useState("one way");
@@ -30,10 +30,15 @@ export default function HomePage() {
   const [selectedStartDate, setSelectedStartDate] = useState(null);
   const [selectedEndDate, setSelectedEndDate] = useState(null);
 
-  const navigateToSignup = () => {
-    navigate("/tosignup");
+  const navigateMyTrips = () => {
+    navigate("/toMyTrips");
   };
-
+  const navigateToSearch_Ticket = () => {
+    navigate("/toSearch_Ticket");
+  };
+  const navigateToProfile = () => {
+    navigate("/toProfile");
+  };
 
   const toggleTripType = () => {
     setShowTripType(!showTripType);
@@ -197,20 +202,20 @@ export default function HomePage() {
   };
 
   return (
-    <div className="homepage-container">
+    <div className="Userpage-container">
       {/* Header */}
-      <header className="HomePage_header">
+      <header className="UserPage_header">
         <div
           className="header-left"
-          onClick={navigateToSignup}
+          onClick={navigateToProfile}
           style={{ cursor: "pointer" }}
         >
           <FaUserCircle size={22} />
-          <span className="header-text">login-signup</span>
+          <span className="header-text" >Narjes Gorji</span>
         </div>
         <h1 className="header-title">ITRIP</h1>
         <div className="header-right">
-          <span className="header-text">my trips</span>
+          <span onClick={navigateMyTrips} className="header-text">my trips</span>
           <FaSuitcase size={18} />
         </div>
       </header>
@@ -290,7 +295,7 @@ export default function HomePage() {
           )}
 
           <input placeholder="p count" />
-          <button className="search-button" onClick={navigateToSignup}>
+          <button className="search-button" onClick={navigateToSearch_Ticket}>
             <FiSearch />
             <span>search</span>
           </button>
@@ -314,7 +319,7 @@ export default function HomePage() {
       </div>
 
       {/* Footer */}
-      <footer className="HomePage_footer">
+      <footer className="UserPage_footer">
         <p>You dream it, We'll ticket it</p>
         <div className="social-icons">
           <FaFacebook size={20} />

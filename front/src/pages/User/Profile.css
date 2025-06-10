@@ -1,0 +1,214 @@
+.container {
+  padding: 2rem;
+  font-family: "Arial", sans-serif;
+  max-width: 700px;
+}
+
+.tabs {
+  display: flex;
+  border-bottom: 1px solid #000;
+  margin-bottom: 1.5rem;
+}
+
+.tab {
+  margin-right: 2rem;
+  padding-bottom: 5px;
+  font-size: 1.1rem;
+  letter-spacing: 2px;
+  cursor: pointer;
+  color: #888;
+}
+
+.tab.active {
+  font-weight: bold;
+  color: #000;
+  border-bottom: 2px solid #000;
+}
+
+.profile-info p {
+  font-size: 1.2rem;
+  margin: 1rem 0;
+}
+
+.label {
+  font-weight: bold;
+  letter-spacing: 2px;
+  margin-right: 10px;
+}
+
+.logout-btn {
+  background: #ddd;
+  border: none;
+  padding: 0.7rem 2rem;
+  border-radius: 20px;
+  font-style: italic;
+  margin-top: 2rem;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.wallet-btn {
+  margin-top: 1rem;
+  background: #cbe2e0;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 10px;
+  cursor: pointer;
+  display: block;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.notification-box {
+  margin-top: 1rem;
+}
+
+.notif-card {
+  background: #eaeaea;
+  border-radius: 2rem;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.plane-icon {
+  background: #dcdcdc;
+  padding: 0.6rem;
+  border-radius: 50%;
+  font-size: 1rem;
+}
+
+.flight-info {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.flight-info strong {
+  font-style: italic;
+  font-size: 1.1rem;
+}
+
+.flight-info span {
+  text-align: center;
+  color: #000;
+}
+
+.flight-info p {
+  font-style: italic;
+  margin: 0;
+}
+
+.cancel-tag {
+  background: #f4c5c5;
+  padding: 0.4rem 1rem;
+  border-radius: 1rem;
+  font-style: italic;
+  font-size: 0.9rem;
+}
+.Profile_footer {
+  width: 100%;
+  position: fixed;
+  bottom: 0;
+  padding: 24px 0;
+  background: var(--purple15);
+  color: var(--black);
+  text-align: center;
+  font-size: 12px;
+  letter-spacing: 2px;
+  bottom: 0;
+}
+
+.social-icons {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  margin-top: 12px;
+}
+
+.social-icons svg {
+  cursor: pointer;
+  transition: all 0.3s;
+  color: var(--gray);
+}
+
+.social-icons svg:hover {
+  color: var(--purple3);
+  transform: translateY(-2px);
+}
+.wallet-input-wrapper {
+  display: flex;
+  align-items: center;
+  margin-top: 1rem;
+  gap: 0.5rem;
+}
+
+.wallet-input {
+  padding: 0.4rem 0.8rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  width: 100px;
+  font-size: 1rem;
+  margin-right: 1rem;
+}
+
+.done-btn {
+  background-color: #a8dfd0;
+  border: none;
+  padding: 0.4rem 0.9rem;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+ /* Flight Card */
+ .flight-card {
+    display: flex;
+    justify-content: space-between;
+    background: #eaeaea;
+    border-radius: 2rem;
+    padding: 1rem 2rem;
+    align-items: center;
+    margin: 1rem 5rem;
+  }
+  
+  .flight-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  
+  .flight-icon {
+    background: #dcdcdc;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .flight-times {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+  }
+  .choose-button {
+    background: #fad7d7ce;
+    border: none;
+    padding: 0.5rem 1.2rem;
+    border-radius: 1rem;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  
+  .choose-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  }
+  

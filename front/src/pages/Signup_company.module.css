@@ -1,0 +1,161 @@
+:root {
+    /* Primary colors */
+    --blue3: #c4dfdf;
+    --blue2: #d2e9e9;
+    --blue1: #e3f4f4;
+    --bone: #f8f6f4;
+    --purple1: #dbdfea;
+    --purple2: #acb1d6;
+    --purple3: #8294c4;
+    --purple15: #dee7ff;
+    --gray: #8f8f8f;
+  }
+  .Signup_company_container {
+    background-image: url("../assets/bg.jpg");
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    min-height: 100vh;
+    background-color: #f5f5f5;
+    padding: 0px;
+  }
+  .Signup_company_cardd{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .Signup_company_card_up {
+    display: flex;
+  }
+  
+  .Signup_company_card {
+    background-color: var(--purple1);
+    border-radius: 30px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    width: 100%;
+    max-width: 25rem;
+    text-align: center;
+  }
+  
+  .Signup_company_header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 30px;
+  }
+  
+  .Signup_company_userText {
+    font-size: 18px;
+    font-weight: normal;
+    color: var(--gray);
+  }
+  .Signup_company_user_button {
+    background-color: var(--purple1);
+    color: var(--gray);
+    border: none;
+    border-top-left-radius: 30px;
+    padding: 10px;
+    font-size: 16px;
+    font-weight: normal;
+    width: 150px;
+    opacity: 50%;
+  }
+  .Signup_company_companyText {
+    font-size: 18px;
+    color: #666;
+  }
+  .Signup_company_company_button {
+    background-color: var(--purple1);
+    color: var(--gray);
+    border: none;
+    border-top-right-radius: 30px;
+    border-top-left-radius: 30px;
+    padding: 10px;
+    font-size: 16px;
+    font-weight: normal;
+    width: 150px;
+    margin-left: -15px;
+  }
+  .Signup_company_loginTitle {
+    font-size: 40px;
+    font-weight: bolder;
+    margin-bottom: 10px;
+    color: var(--purple3);
+    margin-top: 0px;
+  }
+  .Signup_company_lineTitle {
+    color: var(--purple3);
+    margin-top: 5px;
+    font-weight: bold;
+    width: 100%;
+    margin-bottom: 50px;
+  }
+  .Signup_company_form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .Signup_company_inputGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    text-align: left;
+  }
+  
+  .Signup_company_label {
+    font-size: 14px;
+    color: var(--gray);
+  }
+  
+  .Signup_company_input {
+    background-color: var(--bone);
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    font-size: 16px;
+    outline: none;
+    transition: border 0.3s;
+    opacity: 50%;
+  }
+  
+  .Signup_company_input:hover {
+    border: 1px solid #999;
+  }
+  
+  .Signup_company_input:focus {
+    border: 1px solid #007bff;
+  }
+  .Signup_company_loginPrompt {
+    color: var(--gray); /* Blue color like a link */
+    cursor: pointer;
+    text-decoration: underline;
+    margin-top: 10px;
+    text-align: center;
+  }
+  
+  .Signup_company_loginPrompt:hover {
+    color: var(--purple3); /* Darker blue on hover */
+  }
+  .Signup_company_button {
+    background-color: var(--purple2);
+    color: rgb(0, 0, 0);
+    border: none;
+    border-radius: 20px;
+    padding: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 0px;
+    transition: 0.3s;
+    width: 100%;
+  }
+  
+  .Signup_company_button:hover {
+    background-color: var(--purple3);
+  }
+  
