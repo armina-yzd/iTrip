@@ -1,0 +1,17 @@
+version: "3.8"
+
+services:
+  front:
+    build: 
+      context: ../front
+      dockerfile: Dockerfile
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.front.rule=Host(`front.localhost`)"
+      - "traefik.http.routers.front.entrypoints=web"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge 
