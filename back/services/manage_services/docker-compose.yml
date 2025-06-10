@@ -4,7 +4,7 @@ services:
   manage_services:
     container_name: manage_services
     build: 
-      context: ../services/manage_services
+      context: ../back/services/manage_services
       dockerfile: Dockerfile
     environment:
       - DATABASE_URL=${DATABASE_URL}
