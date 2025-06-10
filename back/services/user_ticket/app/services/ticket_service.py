@@ -24,3 +24,6 @@ class TicketService():
                 seat_num=ticket.seat_num
             )
         )
+    
+    async def ticket_count(self, service_id: int) -> int:
+        return self.ticket_repository.ticket_count(service_id)
