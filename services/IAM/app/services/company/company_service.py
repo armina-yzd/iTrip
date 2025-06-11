@@ -28,6 +28,9 @@ class CompanyService():
     async def get_company_by_email(self, email: str) -> Company:
         return self.company_repository.get_company_by_email(email)
     
+    async def get_company_name(self, id: int) -> Company:
+        return self.company_repository.get_company_name(id)
+    
     async def get_company_by_name(self, name: str) -> Company:
         return self.company_repository.get_company_by_name(name)
 

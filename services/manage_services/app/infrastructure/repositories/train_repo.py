@@ -36,6 +36,15 @@ class TrainServiceRepository:
         )
         return train_service.compart_person_num * train_service.compartment_num
     
+    def get_info_by_id(self, id: int) -> TrainService:
+        train_service:TrainService = self.db.query(TrainService).filter(TrainService.id == id).first()
+        if not train_service:
+            raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, 
+            detail="Service Does Not Exist"
+        )
+        return train_service
+    
     def filter_service_by_place_and_date(self,from_location:str,to_location:str, start_date:date) -> list[TrainService]:
         return self.db.query(TrainService).filter(TrainService.from_location == from_location,
                                                 TrainService.to_location==to_location,

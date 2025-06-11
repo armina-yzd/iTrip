@@ -45,6 +45,9 @@ class TicketService():
     async def user_tickets(self, user_id: int) -> list[Ticket]:
         return self.ticket_repository.user_tickets(user_id)
     
+    async def all_tickets(self) -> list[Ticket]:
+        tickets = self.ticket_repository.all_tickets()
+    
     async def buy_ticket(self, payment_id:int,buy_ticket_create: list[BuyTicketCreate],user_id:int) -> list[BuyTicketResponse]:
 
         ticket_count:int = await self.payment_service.get_ticket_count(payment_id)

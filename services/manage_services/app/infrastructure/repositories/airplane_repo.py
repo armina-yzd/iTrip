@@ -36,6 +36,15 @@ class AirplaneServiceRepository:
         )
         return airplane_service.capacity
     
+    def get_info_by_id(self, id: int) -> AirplaneService:
+        airplane_service:AirplaneService = self.db.query(AirplaneService).filter(AirplaneService.id == id).first()
+        if not airplane_service:
+            raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, 
+            detail="Service Does Not Exist"
+        )
+        return airplane_service
+    
     def filter_service_by_place_and_date(self,from_location:str,to_location:str, start_date:date) -> list[AirplaneService]:
         return self.db.query(AirplaneService).filter(AirplaneService.from_location == from_location,
                                                 AirplaneService.to_location==to_location,

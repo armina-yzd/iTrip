@@ -52,7 +52,7 @@ class TrainCreate(BaseModel):
 
 class BusResponse(BaseModel):
     id: int
-    company_id: int
+    company_name: str
     from_location: str
     to_location: str
     start_date: date
@@ -67,7 +67,7 @@ class BusResponse(BaseModel):
 
 class AirplainResponse(BaseModel):
     id: int
-    company_id: int
+    company_name: str
     from_location: str
     to_location: str
     start_date: date
@@ -82,7 +82,7 @@ class AirplainResponse(BaseModel):
 
 class TourResponse(BaseModel):
     id: int
-    company_id: int
+    company_name: str
     from_location: str
     to_location: str
     start_date: date
@@ -99,7 +99,7 @@ class TourResponse(BaseModel):
 
 class TrainResponse(BaseModel):
     id: int
-    company_id: int
+    company_name: str
     from_location: str
     to_location: str
     start_date: date

@@ -22,4 +22,9 @@ class TicketRepository:
         return self.db.query(Ticket).join(Pay, Ticket.pay_id == Pay.id).filter(Pay.id == pay_id).count()
     
     def user_tickets(self, user_id: int) -> list[Ticket]:
-        return self.db.query(Ticket).filter(Ticket.user_id == user_id)
+        return self.db.query(Ticket).filter(Ticket.user_id == user_id).all()
+    
+    def all_tickets(self) -> list[Ticket]:
+        return self.db.query(Ticket).all()
+    
+    

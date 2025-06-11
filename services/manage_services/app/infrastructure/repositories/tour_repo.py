@@ -36,6 +36,15 @@ class TourServiceRepository:
         )
         return tour_service.capacity
     
+    def get_info_by_id(self, id: int) -> TourService:
+        tour_service:TourService = self.db.query(TourService).filter(TourService.id == id).first()
+        if not tour_service:
+            raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, 
+            detail="Service Does Not Exist"
+        )
+        return tour_service
+    
     def filter_service_by_place_and_date(self,from_location:str,to_location:str, start_date:date) -> list[TourService]:
         return self.db.query(TourService).filter(TourService.from_location == from_location,
                                                 TourService.to_location==to_location,

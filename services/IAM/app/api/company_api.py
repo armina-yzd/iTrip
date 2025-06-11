@@ -48,12 +48,16 @@ async def create_company(
 ):
     return await verify_company.verify_company(company)
 
+@router.post("/companyName/{id}", response_model=str)
+async def company_name(
+    id: int,  company_service: Annotated[CompanyService, Depends()]
+):
+    return await company_service.get_company_name(id)
 
 # Get all users
 @router.get("/companies/", response_model=List[CompanyResponse])
 def get_companiess(db: Session = Depends(get_db)):
     return db.query(Company).all()
-
 
 # Delete a user
 @router.delete("/companies/{company_id}")
