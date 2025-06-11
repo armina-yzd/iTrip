@@ -17,3 +17,7 @@ class PaymentRepository:
     def get_ticket_count(self, id: int) -> int:
         payment:Pay = self.db.query(Pay).filter(Pay.id == id).first()
         return payment.ticket_num
+    
+    def get_service_id_and_type(self, id: int) -> Pay:
+        payment:Pay = self.db.query(Pay).filter(Pay.id == id).first()
+        return payment

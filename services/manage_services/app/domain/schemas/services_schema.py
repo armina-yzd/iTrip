@@ -1,6 +1,7 @@
+from enum import Enum
 from pydantic import BaseModel
 from datetime import date, time
-
+    
 class BusCreate(BaseModel):
     from_location: str
     to_location: str
@@ -62,6 +63,7 @@ class BusResponse(BaseModel):
     price: int
     is_canceled: bool
     capacity: int
+    remain: int
 
 class AirplainResponse(BaseModel):
     id: int
@@ -76,6 +78,7 @@ class AirplainResponse(BaseModel):
     price: int
     is_canceled: bool
     capacity: int
+    remain: int
 
 class TourResponse(BaseModel):
     id: int
@@ -92,8 +95,69 @@ class TourResponse(BaseModel):
     end_date: date
     end_time: time
     capacity: int
+    remain: int
 
 class TrainResponse(BaseModel):
+    id: int
+    company_id: int
+    from_location: str
+    to_location: str
+    start_date: date
+    start_time: time
+    detail: str
+    vehicle_type: str
+    vehicle_num: int
+    price: int
+    is_canceled: bool
+    compartment_num: int
+    compart_person_num: int
+    remain: int
+
+class BusResponse2(BaseModel):
+    id: int
+    company_id: int
+    from_location: str
+    to_location: str
+    start_date: date
+    start_time: time
+    detail: str
+    vehicle_type: str
+    vehicle_num: int
+    price: int
+    is_canceled: bool
+    capacity: int
+
+class AirplainResponse2(BaseModel):
+    id: int
+    company_id: int
+    from_location: str
+    to_location: str
+    start_date: date
+    start_time: time
+    detail: str
+    vehicle_type: str
+    vehicle_num: int
+    price: int
+    is_canceled: bool
+    capacity: int
+
+class TourResponse2(BaseModel):
+    id: int
+    company_id: int
+    from_location: str
+    to_location: str
+    start_date: date
+    start_time: time
+    detail: str
+    vehicle_type: str
+    vehicle_num: int
+    price: int
+    is_canceled: bool
+    end_date: date
+    end_time: time
+    capacity: int
+
+class TrainResponse2(BaseModel):
     id: int
     company_id: int
     from_location: str

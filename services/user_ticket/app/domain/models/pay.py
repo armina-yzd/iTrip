@@ -8,7 +8,7 @@ purchase_method_enum = ENUM('wallet', 'bank', name='purchase_method_enum')
 service_type_enum = ENUM('bus', 'train', 'tour', 'airplane', name='service_type_enum')
 
 class Pay(EntityBase):
-    __tablename__ = "payment"
+    __tablename__ = "paymentTicket"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     service_id = Column(Integer, nullable=False)

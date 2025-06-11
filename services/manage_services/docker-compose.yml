@@ -9,6 +9,7 @@ services:
     environment:
       - DATABASE_URL=${DATABASE_URL}
       - IAM_URL=${IAM_URL}
+      - USER_TICKET_URL=${USER_TICKET_URL}
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.manage_services.rule=Host(`manage_services.localhost`)"

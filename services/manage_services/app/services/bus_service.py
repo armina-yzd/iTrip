@@ -1,21 +1,25 @@
 from datetime import date
-from typing import Annotated, Dict
+from typing import Annotated, Dict, List
 from fastapi import Depends
 
 from app.domain.schemas.services_schema import (
-    BusCreate
+    BusCreate,
+    BusResponse
 )
 from app.domain.models.bus_service import BusService
 from app.infrastructure.repositories.bus_repo import BusServiceRepository
+from app.infrastructure.clients.user_ticket_client import UTClient
 
 
 class BusSService():
     def __init__(
         self,
-        bus_service_repository: Annotated[BusServiceRepository, Depends()]
+        bus_service_repository: Annotated[BusServiceRepository, Depends()],
+        ut_client: Annotated[UTClient, Depends()],
     ) -> None:
         super().__init__()
         self.bus_service_repository = bus_service_repository
+        self.ut_client = ut_client
 
     async def add_bus_service(self, service: BusCreate, company_id: int) -> BusService:
         return self.bus_service_repository.add_bus_service(
@@ -34,11 +38,48 @@ class BusSService():
         )
 
 
-    async def get_service_by_company_id(self, id: int) -> list[BusService]:
-        return self.bus_service_repository.get_service_by_company_id(id)
+    async def get_service_by_company_id(self, id: int) -> list[BusResponse]:
+        bus_d = self.bus_service_repository.get_service_by_company_id(id)
+        return await self.change_to_response_format(bus_d)
     
     async def get_price_by_id(self, id: int) -> int:
         return self.bus_service_repository.get_price_by_id(id)
     
+    async def get_remain_by_id(self, id: int) -> int:
+        ticket_count:int = await self.ut_client.ticket_count(id,"bus")
+        capacity = self.bus_service_repository.get_capacity_by_id(id)
+        return capacity - ticket_count
+    
     async def filter_service_by_place_and_date(self,from_location:str,to_location:str, start_date:date) -> list[BusService]:
-        return self.bus_service_repository.filter_service_by_place_and_date(from_location,to_location,start_date)
+        return self.bus_service_repository.filter_service_by_place_and_date(from_location,
+                                                                            to_location,
+                                                                            start_date)
+    
+    async def get_filtered_services(self,from_location:str,to_location:str, start_date:date) -> list[BusResponse]:
+        bus_d = await self.filter_service_by_place_and_date(from_location,
+                                                              to_location,
+                                                              start_date)
+        return await self.change_to_response_format(bus_d)
+        
+
+    async def change_to_response_format(self, bus_d:list[BusService]) -> list[BusResponse]:
+        bus_services : List[BusResponse] = []
+        for bus in bus_d:
+            ticket_count:int = await self.ut_client.ticket_count(bus.id,"bus")
+            bus_response = BusResponse(
+                id= bus.id,
+                company_id= bus.company_id,
+                from_location= bus.from_location,
+                to_location= bus.to_location,
+                start_date= bus.start_date,
+                start_time= bus.start_time,
+                detail= bus.detail,
+                vehicle_type= bus.vehicle_type,
+                vehicle_num= bus.vehicle_num,
+                price= bus.price,
+                is_canceled= bus.is_canceled,
+                capacity= bus.capacity,
+                remain= bus.capacity - ticket_count
+            )
+            bus_services.append(bus_response)
+        return bus_services

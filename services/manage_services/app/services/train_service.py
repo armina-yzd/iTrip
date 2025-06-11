@@ -1,21 +1,24 @@
 from datetime import date
-from typing import Annotated, Dict
+from typing import Annotated, Dict, List
 from fastapi import Depends
 
 from app.domain.schemas.services_schema import (
-    TrainCreate
+    TrainCreate,
+    TrainResponse
 )
 from app.domain.models.train_service import TrainService
 from app.infrastructure.repositories.train_repo import TrainServiceRepository
-
+from app.infrastructure.clients.user_ticket_client import UTClient
 
 class TrainSService():
     def __init__(
         self,
-        train_service_repository: Annotated[TrainServiceRepository, Depends()]
+        train_service_repository: Annotated[TrainServiceRepository, Depends()],
+        ut_client: Annotated[UTClient, Depends()],
     ) -> None:
         super().__init__()
         self.train_service_repository = train_service_repository
+        self.ut_client = ut_client
 
     async def add_train_service(self, service: TrainCreate, company_id: int) -> TrainService:
         return self.train_service_repository.add_train_service(
@@ -34,12 +37,48 @@ class TrainSService():
             )
         )
     
-    async def get_service_by_company_id(self, id: int) -> list[TrainService]:
-        return self.train_service_repository.get_service_by_company_id(id)
+    async def get_service_by_company_id(self, id: int) -> list[TrainResponse]:
+        train_d = self.train_service_repository.get_service_by_company_id(id)
+        return await self.change_to_response_format(train_d)
     
     async def get_price_by_id(self, id: int) -> int:
         return self.train_service_repository.get_price_by_id(id)
     
+    async def get_remain_by_id(self, id: int) -> int:
+        ticket_count:int = await self.ut_client.ticket_count(id,"train")
+        capacity = self.train_service_repository.get_capacity_by_id(id)
+        return capacity - ticket_count
+    
     async def filter_service_by_place_and_date(self,from_location:str,to_location:str, start_date:date) -> list[TrainService]:
         return self.train_service_repository.filter_service_by_place_and_date(from_location,to_location,start_date)
+    
+    async def get_filtered_services(self,from_location:str,to_location:str, start_date:date) -> list[TrainResponse]:
+        train_d = await self.filter_service_by_place_and_date(from_location,
+                                                              to_location,
+                                                              start_date)
+        return await self.change_to_response_format(train_d)
+        
+
+    async def change_to_response_format(self, train_d:list[TrainService]) -> list[TrainResponse]:
+        train_services : List[TrainResponse] = []
+        for train in train_d:
+            ticket_count:int = await self.ut_client.ticket_count(train.id,"train")
+            train_response = TrainResponse(
+                id= train.id,
+                company_id= train.company_id,
+                from_location= train.from_location,
+                to_location= train.to_location,
+                start_date= train.start_date,
+                start_time= train.start_time,
+                detail= train.detail,
+                vehicle_type= train.vehicle_type,
+                vehicle_num= train.vehicle_num,
+                price= train.price,
+                is_canceled= train.is_canceled,
+                compartment_num= train.compartment_num,
+                compart_person_num=train.compart_person_num,
+                remain= (train.compartment_num * train.compart_person_num) - ticket_count
+            )
+            train_services.append(train_response)
+        return train_services
 

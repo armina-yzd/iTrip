@@ -7,10 +7,10 @@ from app.domain.schemas.services_schema import (
     TourCreate,
     TrainCreate,
     AirplainCreate,
-    BusResponse,
-    TourResponse,
-    TrainResponse,
-    AirplainResponse
+    BusResponse2,
+    TourResponse2,
+    TrainResponse2,
+    AirplainResponse2
 )
 from app.services.auth import get_current_company
 from app.services.bus_service import BusSService
@@ -20,7 +20,7 @@ from app.services.airplane_service import AirplaneSService
 
 router = APIRouter(prefix="/addServices", tags=["Add"])
 
-@router.post("/addBusService/",response_model=BusResponse)
+@router.post("/addBusService/",response_model=BusResponse2)
 async def add_bus_service(
     current_company: Annotated[TokenData, Depends(get_current_company)], 
     bus_create: BusCreate,
@@ -28,7 +28,7 @@ async def add_bus_service(
 ):
     return await bus_service.add_bus_service(bus_create,current_company.id)
 
-@router.post("/addTrainService/",response_model=TrainResponse)
+@router.post("/addTrainService/",response_model=TrainResponse2)
 async def add_train_service(
     current_company: Annotated[TokenData, Depends(get_current_company)], 
     train_create: TrainCreate,
@@ -36,7 +36,7 @@ async def add_train_service(
 ):
     return await train_service.add_train_service(train_create,current_company.id)
 
-@router.post("/addTourService/",response_model=TourResponse)
+@router.post("/addTourService/",response_model=TourResponse2)
 async def add_train_service(
     current_company: Annotated[TokenData, Depends(get_current_company)], 
     tour_create: TourCreate,
@@ -44,7 +44,7 @@ async def add_train_service(
 ):
     return await tour_service.add_tour_service(tour_create,current_company.id)
 
-@router.post("/addAirplaneService/",response_model=AirplainResponse)
+@router.post("/addAirplaneService/",response_model=AirplainResponse2)
 async def add_airplane_service(
     current_company: Annotated[TokenData, Depends(get_current_company)], 
     airplane_create: AirplainCreate,
