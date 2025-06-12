@@ -13,7 +13,7 @@ services:
       - MANAGE_SERVICES_URL=${MANAGE_SERVICES_URL}
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.user_ticket.rule=Host(`userticket.localhost`)"
+      - "traefik.http.routers.user_ticket.rule=Host(`user_ticket.localhost`)"
       - "traefik.http.routers.user_ticket.entrypoints=web"
       - "traefik.http.services.user_ticket.loadbalancer.server.port=8000"
     networks:

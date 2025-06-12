@@ -51,3 +51,6 @@ class PaymentService():
     
     async def get_ticket_count(self, id: int) -> int:
         return self.payment_repository.get_ticket_count(id)
+    
+    async def get_service_id_and_type(self, id: int) -> Pay:
+        return self.payment_repository.get_service_id_and_type(id)

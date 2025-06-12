@@ -1,5 +1,5 @@
 from typing import Annotated
-from fastapi import Depends
+from fastapi import Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from app.core.db.database import get_db
 from app.domain.models.company import Company
@@ -25,3 +25,12 @@ class CompanyRepository:
     
     def get_verified_company(self, email: str) -> Company:
         return self.db.query(Company).filter(Company.email == email, Company.is_verified).first()
+    
+    def get_company_name(self, id: int) -> str:
+        company = self.db.query(Company).filter(Company.id == id).first()
+        if not company:
+            raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST, 
+                    detail="company does not exist"
+                )
+        return company.name

@@ -13,6 +13,7 @@ from app.services.bus_service import BusSService
 from app.services.train_service import TrainSService
 from app.services.tour_service import TourSService
 from app.services.airplane_service import AirplaneSService
+from app.infrastructure.clients.user_ticket_client import UTClient
 
 router = APIRouter(prefix="/filterServices", tags=["Filter"])
 
@@ -21,25 +22,25 @@ async def filter_bus_service(
     bus_service: Annotated[BusSService, Depends()],
     filter_service: FilterService
 ):
-    return await bus_service.filter_service_by_place_and_date(filter_service.from_location,
-                                                              filter_service.to_location,
-                                                              filter_service.start_date)
-
+    return await bus_service.get_filtered_services(filter_service.from_location,
+                                                   filter_service.to_location,
+                                                   filter_service.start_date)
+    
 @router.post("/FilterTrainService/",response_model=List[TrainResponse])
 async def filter_train_service(
     train_service: Annotated[TrainSService, Depends()],
     filter_service: FilterService
 ):
-    return await train_service.filter_service_by_place_and_date(filter_service.from_location,
-                                                                filter_service.to_location,
-                                                                filter_service.start_date)
+    return await train_service.get_filtered_services(filter_service.from_location,
+                                                    filter_service.to_location,
+                                                    filter_service.start_date)
 
 @router.post("/FilterTourService/",response_model=List[TourResponse])
 async def filter_tour_service(
     tour_service: Annotated[TourSService, Depends()],
     filter_service: FilterService
 ):
-    return await tour_service.filter_service_by_place_and_date(filter_service.from_location,
+    return await tour_service.get_filtered_services(filter_service.from_location,
                                                                filter_service.to_location,
                                                                filter_service.start_date)
 
@@ -48,6 +49,6 @@ async def filter_airplane_service(
     airplane_service: Annotated[AirplaneSService, Depends()],
     filter_service: FilterService
 ):
-    return await airplane_service.filter_service_by_place_and_date(filter_service.from_location,
-                                                                   filter_service.to_location,
-                                                                   filter_service.start_date)
+    return await airplane_service.get_filtered_services(filter_service.from_location,
+                                                        filter_service.to_location,
+                                                        filter_service.start_date)

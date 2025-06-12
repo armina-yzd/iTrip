@@ -3,7 +3,7 @@ from fastapi import Depends
 from decouple import config
 
 from app.core.config import get_settings, Settings
-from app.domain.schemas.token_schema import TokenData
+from app.domain.schemas.token_schema import TokenData, TokenDataAdmin
 from app.infrastructure.clients.http_client import HTTPClient
 
 SECRET : str = config("SECRET")
@@ -24,6 +24,15 @@ class IAMClient:
             )
             response.raise_for_status()
             return TokenData(**response.json())
+        
+    async def validate_token_admin(self, token: str) -> TokenDataAdmin:
+        headers = {"Authorization": f"Bearer {token}"}
+        async with self.http_client as client:
+            response = await client.get(
+                f"{self.config.IAM_URL}/api/admin/me", headers=headers
+            )
+            response.raise_for_status()
+            return TokenDataAdmin(**response.json())
         
     async def reduce_wallet(self, new_wallet: int, user_id: int):
         async with self.http_client as client:

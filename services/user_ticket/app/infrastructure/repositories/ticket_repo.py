@@ -15,5 +15,16 @@ class TicketRepository:
         self.db.refresh(ticket)
         return ticket
     
-    def ticket_count(self, service_id: int) -> int:
-        return self.db.query(Ticket).join(Pay, Ticket.pay_id == Pay.id).filter(Pay.service_id == service_id).count()
+    def ticket_count(self, service_id: int,service_type:str) -> int:
+        return self.db.query(Ticket).join(Pay, Ticket.pay_id == Pay.id).filter(Pay.service_id == service_id, Pay.service_type == service_type).count()
+    
+    def payment_count(self, pay_id: int) -> int:
+        return self.db.query(Ticket).join(Pay, Ticket.pay_id == Pay.id).filter(Pay.id == pay_id).count()
+    
+    def user_tickets(self, user_id: int) -> list[Ticket]:
+        return self.db.query(Ticket).filter(Ticket.user_id == user_id).all()
+    
+    def all_tickets(self) -> list[Ticket]:
+        return self.db.query(Ticket).all()
+    
+    

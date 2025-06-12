@@ -22,3 +22,11 @@ class IAMClient:
             )
             response.raise_for_status()
             return TokenData(**response.json())
+    
+    async def company_name(self, company_id: int) -> str:
+        async with self.http_client as client:
+            response = await client.post(
+                f"{self.config.IAM_URL}/api/company/companyName/{company_id}"
+            )
+            response.raise_for_status()
+            return str(response.json())

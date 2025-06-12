@@ -27,6 +27,24 @@ class BusServiceRepository:
         )
         return bus_service.price
     
+    def get_capacity_by_id(self, id: int) -> int:
+        bus_service:BusService = self.db.query(BusService).filter(BusService.id == id).first()
+        if not bus_service:
+            raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, 
+            detail="Service Does Not Exist"
+        )
+        return bus_service.capacity
+    
+    def get_info_by_id(self, id: int) -> BusService:
+        bus_service:BusService = self.db.query(BusService).filter(BusService.id == id).first()
+        if not bus_service:
+            raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, 
+            detail="Service Does Not Exist"
+        )
+        return bus_service
+    
     def filter_service_by_place_and_date(self,from_location:str,to_location:str, start_date:date) -> list[BusService]:
         return self.db.query(BusService).filter(BusService.from_location == from_location,
                                                 BusService.to_location==to_location,
