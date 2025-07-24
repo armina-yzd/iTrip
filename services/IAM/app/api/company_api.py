@@ -67,10 +67,7 @@ async def get_unverified_companiess(
     company_service: Annotated[CompanyService, Depends()]):
     return await company_service.get_unverified_companies_admin()
 
-@router.post(
-    "/verify_email_admin",
-    response_model=CompanyResponse
-)
+@router.post("/verify_email_admin",response_model=CompanyResponse)
 async def verify_company_email(
     email: str,
     current_admin: Annotated[Admin, Depends(get_current_admin)],
@@ -78,10 +75,7 @@ async def verify_company_email(
 ):
     return await company_service.verify_company_admin(email)
 
-@router.post(
-    "/ban_company_admin",
-    response_model=CompanyResponse
-)
+@router.post("/ban_company_admin",response_model=CompanyResponse)
 async def ban_company(
     email: str,
     current_admin: Annotated[Admin, Depends(get_current_admin)],
@@ -89,10 +83,7 @@ async def ban_company(
 ):
     return await company_service.ban_company_admin(email)
 
-@router.post(
-    "/unban_company_admin",
-    response_model=CompanyResponse
-)
+@router.post("/unban_company_admin",response_model=CompanyResponse)
 async def unban_company(
     email: str,
     current_admin: Annotated[Admin, Depends(get_current_admin)],
