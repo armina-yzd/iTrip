@@ -6,6 +6,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from decouple import config
 
 from app.domain.models.user import User
+from app.domain.models.admin import Admin
 from app.domain.schemas.user_schema import (
     UserResponse,
     UserLogIn,
@@ -17,7 +18,7 @@ from app.domain.schemas.user_schema import (
 )
 from app.domain.schemas.token_schema import Token
 from app.core.db.database import get_db
-from app.services.auth.auth import AuthService , get_current_user
+from app.services.auth.auth import AuthService , get_current_user, get_current_admin
 from app.services.user.register_service import RegisterService
 from app.services.user.user_service import UserService
 
@@ -63,19 +64,22 @@ async def change_wallet(
         )
     return await user_service.change_user_wallet(user_id,request.new_wallet)
 
-# Get all users
-@router.get("/users/", response_model=List[UserResponse])
-def get_users(db: Session = Depends(get_db)):
-    return db.query(User).all()
+@router.get("/get_users_admin/", response_model=List[UserResponse])
+async def get_users(
+    current_admin: Annotated[Admin, Depends(get_current_admin)],
+    user_service: Annotated[UserService, Depends()]):
+    return await user_service.get_users_admin()
 
+@router.post("/ban_user/{user_email}", response_model=UserResponse)
+async def ban_user(
+    user_email: str,
+    current_admin: Annotated[Admin, Depends(get_current_admin)],
+    user_service: Annotated[UserService, Depends()]):
+    return await user_service.ban_user_admin(user_email)
 
-# Delete a user
-@router.delete("/users/{user_id}")
-def delete_user(user_id: int, db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.id == user_id).first()
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-    
-    db.delete(user)
-    db.commit()
-    return {"message": "User deleted successfully"}
+@router.post("/unban_user/{user_email}", response_model=UserResponse)
+async def unban_user(
+    user_email: str,
+    current_admin: Annotated[Admin, Depends(get_current_admin)],
+    user_service: Annotated[UserService, Depends()]):
+    return await user_service.unban_user_admin(user_email)

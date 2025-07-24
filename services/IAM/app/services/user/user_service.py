@@ -35,6 +35,17 @@ class UserService():
     async def get_banned_user(self, email: str) -> User:
         return self.user_repository.get_banned_user(email)
     
+    async def get_users_admin(self) -> list[User]:
+        return self.user_repository.get_users_admin()
+    
+    async def ban_user_admin(self,email: str) -> list[User]:
+        user = await self.get_user_by_email(email)
+        return self.user_repository.ban_user_admin(user)
+    
+    async def unban_user_admin(self,email: str) -> list[User]:
+        user = await self.get_user_by_email(email)
+        return self.user_repository.unban_user_admin(user)
+    
     async def change_user_wallet(self, id:int, new_wallet:int) -> User:
         if new_wallet<0:
             raise HTTPException(

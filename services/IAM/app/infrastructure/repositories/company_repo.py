@@ -26,6 +26,30 @@ class CompanyRepository:
     def get_verified_company(self, email: str) -> Company:
         return self.db.query(Company).filter(Company.email == email, Company.is_verified).first()
     
+    def get_verified_companies_admin(self) -> list[Company]:
+        return self.db.query(Company).filter( Company.is_verified).all()
+    
+    def get_unverified_companies_admin(self) -> list[Company]:
+        return self.db.query(Company).filter(not Company.is_verified).all()
+    
+    def ban_company_admin(self,company : Company) -> Company:
+        company.is_banned = True
+        self.db.commit()
+        self.db.refresh(company)
+        return company
+    
+    def unban_company_admin(self,company : Company) -> Company:
+        company.is_banned = False
+        self.db.commit()
+        self.db.refresh(company)
+        return company
+    
+    def verify_company_admin(self,company : Company) -> Company:
+        company.is_verified = True
+        self.db.commit()
+        self.db.refresh(company)
+        return company
+
     def get_company_name(self, id: int) -> str:
         company = self.db.query(Company).filter(Company.id == id).first()
         if not company:
