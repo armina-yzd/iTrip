@@ -13,9 +13,11 @@ import MyTrips from "./pages/User/MyTrips";
 import CompanyPage from "./pages/Company/CompanyPage";
 import CompanyProfile from "./pages/Company/CompanyProfile";
 import AddService from "./pages/Company/AddService";
+import { AuthProvider } from "./pages/AuthContext";
 
 function App() {
   return (
+    <AuthProvider>
     <Router>
       <Routes>
         <Route path="/" element={<HomePage />} />
@@ -71,8 +73,8 @@ function App() {
       <Routes>
         <Route path="/toAddService" element={<AddService />} />
       </Routes>
-
     </Router>
+    </AuthProvider>
   );
 }
 
