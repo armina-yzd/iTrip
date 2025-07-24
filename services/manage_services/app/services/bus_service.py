@@ -41,9 +41,12 @@ class BusSService():
             )
         )
 
-
     async def get_service_by_company_id(self, id: int) -> list[BusResponse]:
         bus_d = self.bus_service_repository.get_service_by_company_id(id)
+        return await self.change_to_response_format(bus_d)
+    
+    async def get_service_admin(self) -> list[BusResponse]:
+        bus_d = self.bus_service_repository.get_service_admin()
         return await self.change_to_response_format(bus_d)
     
     async def get_price_by_id(self, id: int) -> int:

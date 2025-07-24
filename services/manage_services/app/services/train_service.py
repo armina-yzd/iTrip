@@ -45,6 +45,10 @@ class TrainSService():
         train_d = self.train_service_repository.get_service_by_company_id(id)
         return await self.change_to_response_format(train_d)
     
+    async def get_service_admin(self) -> list[TrainResponse]:
+        train_d = self.train_service_repository.get_service_admin()
+        return await self.change_to_response_format(train_d)
+    
     async def get_price_by_id(self, id: int) -> int:
         return self.train_service_repository.get_price_by_id(id)
     

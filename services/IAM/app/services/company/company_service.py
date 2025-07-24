@@ -1,5 +1,5 @@
 from typing import Annotated, Dict
-from fastapi import Depends
+from fastapi import Depends,HTTPException,status
 
 from app.domain.models.company import Company
 from app.domain.schemas.company_schema import VerifyOtp
@@ -40,3 +40,30 @@ class CompanyService():
     async def get_verified_company(self, email: str) -> Company:
         return self.company_repository.get_verified_company(email)
     
+    async def get_verified_companies_admin(self) -> list[Company]:
+        return self.company_repository.get_verified_companies_admin()
+    
+    async def get_unverified_companies_admin(self) -> list[Company]:
+        return self.company_repository.get_unverified_companies_admin()
+    
+    async def ban_company_admin(self,email: str) -> Company:
+        company = await self.get_company_by_email(email)
+        if not company.is_verified:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, 
+                detail="company is not verified"
+            )
+        return self.company_repository.ban_company_admin(company)
+    
+    async def unban_company_admin(self,email: str) -> Company:
+        company = await self.get_company_by_email(email)
+        if not company.is_verified:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, 
+                detail="company is not verified"
+            )
+        return self.company_repository.unban_company_admin(company)
+    
+    async def verify_company_admin(self,email: str) -> Company:
+        company = await self.get_company_by_email(email)
+        return self.company_repository.verify_company_admin(company)

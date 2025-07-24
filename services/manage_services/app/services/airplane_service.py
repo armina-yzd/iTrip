@@ -44,6 +44,10 @@ class AirplaneSService():
         airplane_d = self.airplane_service_repository.get_service_by_company_id(id)
         return await self.change_to_response_format(airplane_d)
     
+    async def get_service_admin(self) -> list[AirplainResponse]:
+        airplane_d = self.airplane_service_repository.get_service_admin()
+        return await self.change_to_response_format(airplane_d)
+
     async def get_price_by_id(self, id: int) -> int:
         return self.airplane_service_repository.get_price_by_id(id)
     
@@ -76,7 +80,6 @@ class AirplaneSService():
                                                               start_date)
         return await self.change_to_response_format(airplane_d)
         
-
     async def change_to_response_format(self, airplane_d:list[AirplaneService]) -> list[AirplainResponse]:
         airplane_services : List[AirplainResponse] = []
         for airplane in airplane_d:

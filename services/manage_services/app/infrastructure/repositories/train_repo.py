@@ -18,6 +18,9 @@ class TrainServiceRepository:
     def get_service_by_company_id(self, id: int) -> list[TrainService]:
         return self.db.query(TrainService).filter(TrainService.company_id == id).all()
     
+    def get_service_admin(self) -> list[TrainService]:
+        return self.db.query(TrainService).filter().all()
+    
     def get_price_by_id(self, id: int) -> int:
         train_service:TrainService = self.db.query(TrainService).filter(TrainService.id == id).first()
         if not train_service:

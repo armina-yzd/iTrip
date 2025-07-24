@@ -18,6 +18,9 @@ class AirplaneServiceRepository:
     def get_service_by_company_id(self, id: int) -> list[AirplaneService]:
         return self.db.query(AirplaneService).filter(AirplaneService.company_id == id).all()
     
+    def get_service_admin(self) -> list[AirplaneService]:
+        return self.db.query(AirplaneService).filter().all()
+
     def get_price_by_id(self, id: int) -> int:
         airplsne_service:AirplaneService = self.db.query(AirplaneService).filter(AirplaneService.id == id).first()
         if not airplsne_service:

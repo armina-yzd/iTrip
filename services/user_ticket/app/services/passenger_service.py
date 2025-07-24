@@ -22,3 +22,6 @@ class PassengerService():
                 national_id=passenger.national_id
             )
         )
+    
+    async def get_passenger_by_id(self, passenger_id: int) -> Passenger:
+        return self.passenger_repository.get_passenger_by_id(passenger_id)

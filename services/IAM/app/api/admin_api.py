@@ -30,6 +30,7 @@ async def login(
 async def get_me(user: Admin = Depends(get_current_admin)):
     return user
 
+# create admin
 @router.post("/admin/", response_model=AdminResponse)
 def create_admin(
     user: AdminCreate, 
@@ -48,20 +49,3 @@ def create_admin(
     db.commit()
     db.refresh(db_admin)
     return db_admin
-
-# Get all admins
-@router.get("/admins/", response_model=List[AdminResponse])
-def get_Admins(db: Session = Depends(get_db)):
-    return db.query(Admin).all()
-
-
-# Delete admin
-@router.delete("/adminsDel/{admin_id}")
-def delete_admin(admin_id: int, db: Session = Depends(get_db)):
-    admin = db.query(Admin).filter(Admin.id == admin_id).first()
-    if not admin:
-        raise HTTPException(status_code=404, detail="admin not found")
-    
-    db.delete(admin)
-    db.commit()
-    return {"message": "admin deleted successfully"}

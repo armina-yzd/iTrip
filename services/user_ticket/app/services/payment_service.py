@@ -13,7 +13,7 @@ class PaymentService():
         self,
         payment_repository: Annotated[PaymentRepository, Depends()],
         client: Annotated[IAMClient, Depends()],
-        manageSclient: Annotated[MSClient, Depends()]
+        manageSclient: Annotated[MSClient, Depends()],
     ) -> None:
         super().__init__()
         self.payment_repository = payment_repository
@@ -21,6 +21,8 @@ class PaymentService():
         self.manageSclient = manageSclient
 
     async def create_payment(self, payment: PaymentCreate,wallet: int,user_id: int,service_id:int,service_type:str) -> Pay:
+        remain = await self.manageSclient.get_remain(service_type,service_id)
+
         if payment.purchase_method == "wallet" and payment.paid > wallet:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST, 
@@ -35,6 +37,11 @@ class PaymentService():
                 status_code=status.HTTP_400_BAD_REQUEST, 
                 detail="payment and service price does not match"
             )
+        if payment.ticket_num > remain:
+            raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST, 
+                    detail="not enough tickets"
+                )
         now = datetime.now()
         return self.payment_repository.create_payment(
             Pay(

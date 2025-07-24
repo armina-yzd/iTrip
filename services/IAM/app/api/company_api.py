@@ -16,9 +16,10 @@ from app.domain.schemas.company_schema import (
 )
 from app.domain.schemas.token_schema import Token
 from app.core.db.database import get_db
-from app.services.auth.auth import AuthService , get_current_company
+from app.services.auth.auth import AuthService, get_current_admin , get_current_company
 from app.services.company.company_register import CompanyRegister
 from app.services.company.company_service import CompanyService
+from app.domain.models.admin import Admin
 
 router = APIRouter(prefix="/company", tags=["Company"])
 
@@ -48,44 +49,44 @@ async def create_company(
 ):
     return await verify_company.verify_company(company)
 
-@router.post("/companyName/{id}", response_model=str)
+@router.get("/companyName/{id}", response_model=str)
 async def company_name(
     id: int,  company_service: Annotated[CompanyService, Depends()]
 ):
     return await company_service.get_company_name(id)
 
-# Get all users
-@router.get("/companies/", response_model=List[CompanyResponse])
-def get_companiess(db: Session = Depends(get_db)):
-    return db.query(Company).all()
+@router.get("/verified_companies_admin/", response_model=List[CompanyResponse])
+async def get_verified_companiess(
+    current_admin: Annotated[Admin, Depends(get_current_admin)],
+    company_service: Annotated[CompanyService, Depends()]):
+    return await company_service.get_verified_companies_admin()
 
-# Delete a user
-@router.delete("/companies/{company_id}")
-def delete_company(company_id: int, db: Session = Depends(get_db)):
-    company = db.query(Company).filter(Company.id == company_id).first()
-    if not company:
-        raise HTTPException(status_code=404, detail="Company not found")
-    
-    db.delete(company)
-    db.commit()
-    return {"message": "Company deleted successfully"}
+@router.get("/unverified_companies_admin/", response_model=List[CompanyResponse])
+async def get_unverified_companiess(
+    current_admin: Annotated[Admin, Depends(get_current_admin)],
+    company_service: Annotated[CompanyService, Depends()]):
+    return await company_service.get_unverified_companies_admin()
 
-
-@router.post(
-    "/verify-email",
-    response_model=VerifyEmailResponse
-)
+@router.post("/verify_email_admin",response_model=CompanyResponse)
 async def verify_company_email(
     email: str,
-    company_service: Annotated[CompanyService, Depends()],
-    db: Session = Depends(get_db),
+    current_admin: Annotated[Admin, Depends(get_current_admin)],
+    company_service: Annotated[CompanyService, Depends()]
 ):
-    current_company = await company_service.get_company_by_email(email)
-    current_company.is_verified = True
-    db.commit()
-    db.refresh(current_company)
-    
-    return {
-        "message": "Company email verified successfully",
-        "company": current_company
-    }
+    return await company_service.verify_company_admin(email)
+
+@router.post("/ban_company_admin",response_model=CompanyResponse)
+async def ban_company(
+    email: str,
+    current_admin: Annotated[Admin, Depends(get_current_admin)],
+    company_service: Annotated[CompanyService, Depends()]
+):
+    return await company_service.ban_company_admin(email)
+
+@router.post("/unban_company_admin",response_model=CompanyResponse)
+async def unban_company(
+    email: str,
+    current_admin: Annotated[Admin, Depends(get_current_admin)],
+    company_service: Annotated[CompanyService, Depends()]
+):
+    return await company_service.unban_company_admin(email)
