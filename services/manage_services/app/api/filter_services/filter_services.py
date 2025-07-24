@@ -17,7 +17,7 @@ from app.infrastructure.clients.user_ticket_client import UTClient
 
 router = APIRouter(prefix="/filterServices", tags=["Filter"])
 
-@router.post("/FilterBusService/",response_model=List[BusResponse])
+@router.get("/FilterBusService/",response_model=List[BusResponse])
 async def filter_bus_service(
     bus_service: Annotated[BusSService, Depends()],
     filter_service: FilterService
@@ -26,7 +26,7 @@ async def filter_bus_service(
                                                    filter_service.to_location,
                                                    filter_service.start_date)
     
-@router.post("/FilterTrainService/",response_model=List[TrainResponse])
+@router.get("/FilterTrainService/",response_model=List[TrainResponse])
 async def filter_train_service(
     train_service: Annotated[TrainSService, Depends()],
     filter_service: FilterService
@@ -35,7 +35,7 @@ async def filter_train_service(
                                                     filter_service.to_location,
                                                     filter_service.start_date)
 
-@router.post("/FilterTourService/",response_model=List[TourResponse])
+@router.get("/FilterTourService/",response_model=List[TourResponse])
 async def filter_tour_service(
     tour_service: Annotated[TourSService, Depends()],
     filter_service: FilterService
@@ -44,7 +44,7 @@ async def filter_tour_service(
                                                                filter_service.to_location,
                                                                filter_service.start_date)
 
-@router.post("/FilterAirplaneService/",response_model=List[AirplainResponse])
+@router.get("/FilterAirplaneService/",response_model=List[AirplainResponse])
 async def filter_airplane_service(
     airplane_service: Annotated[AirplaneSService, Depends()],
     filter_service: FilterService

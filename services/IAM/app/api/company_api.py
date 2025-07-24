@@ -48,7 +48,7 @@ async def create_company(
 ):
     return await verify_company.verify_company(company)
 
-@router.post("/companyName/{id}", response_model=str)
+@router.get("/companyName/{id}", response_model=str)
 async def company_name(
     id: int,  company_service: Annotated[CompanyService, Depends()]
 ):

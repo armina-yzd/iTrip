@@ -18,6 +18,9 @@ class BusServiceRepository:
     def get_service_by_company_id(self, id: int) -> list[BusService]:
         return self.db.query(BusService).filter(BusService.company_id == id).all()
     
+    def get_service_admin(self) -> list[BusService]:
+        return self.db.query(BusService).filter().all()
+    
     def get_price_by_id(self, id: int) -> int:
         bus_service:BusService = self.db.query(BusService).filter(BusService.id == id).first()
         if not bus_service:

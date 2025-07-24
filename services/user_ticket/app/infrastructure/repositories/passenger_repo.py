@@ -13,3 +13,7 @@ class PassengerRepository:
         self.db.commit()
         self.db.refresh(passenger)
         return passenger
+    
+    def get_passenger_by_id(self, passenger_id: int) -> Passenger:
+        passenger:Passenger = self.db.query(Passenger).filter(Passenger.id == passenger_id).first()
+        return passenger

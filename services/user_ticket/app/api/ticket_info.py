@@ -6,7 +6,7 @@ from app.services.ticket_service import TicketService
 
 router = APIRouter(prefix="/TicketInfo", tags=["TicketInfo"])
 
-@router.post("/ticketCount/{service_id}",response_model=int)
+@router.get("/ticketCount/{service_id}",response_model=int)
 async def ticket_count(
     ticket_service: Annotated[TicketService, Depends()],
     service_id: int,

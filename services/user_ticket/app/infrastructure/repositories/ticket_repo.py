@@ -23,8 +23,3 @@ class TicketRepository:
     
     def user_tickets(self, user_id: int) -> list[Ticket]:
         return self.db.query(Ticket).filter(Ticket.user_id == user_id).all()
-    
-    def all_tickets(self) -> list[Ticket]:
-        return self.db.query(Ticket).all()
-    
-    

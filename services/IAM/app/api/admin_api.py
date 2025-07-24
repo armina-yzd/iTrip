@@ -30,6 +30,7 @@ async def login(
 async def get_me(user: Admin = Depends(get_current_admin)):
     return user
 
+# create admin
 @router.post("/admin/", response_model=AdminResponse)
 def create_admin(
     user: AdminCreate, 

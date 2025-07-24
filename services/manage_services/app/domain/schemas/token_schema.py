@@ -7,3 +7,9 @@ class TokenData(BaseModel):
     password: str
     is_verified: bool
     is_banned: bool
+
+class TokenDataAdmin(BaseModel):
+    id: int
+    username: str
+    email: str
+    password: str
