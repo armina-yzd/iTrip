@@ -15,10 +15,39 @@ function LoginUser() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();
+  //   console.log(formData);
+  //   // Add your login logic here
+  // };
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(formData);
-    // Add your login logic here
+
+    try {
+      const response = await fetch("http://iam.localhost/api/user/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams({
+          username: formData.email, // FastAPI OAuth expects 'username'
+          password: formData.password,
+        }),
+      });
+      console.log(response);
+      if (!response.ok) throw new Error("Login failed");
+
+      const data = await response.json();
+      console.log("Token:", data.access_token);
+
+      // Save token in localStorage or context:
+      localStorage.setItem("access_token", data.access_token);
+
+      navigate("/toUserPage");
+    } catch (error) {
+      console.error(error);
+      alert("Invalid email or password.");
+    }
   };
 
   const navigateToCompany = () => navigate("/tocompany");
@@ -27,7 +56,7 @@ function LoginUser() {
 
   return (
     <div className={styles.Login_user_container}>
-       <button
+      <button
         onClick={navigateback}
         style={{
           padding: "8px 12px",
@@ -45,11 +74,7 @@ function LoginUser() {
 
       <div className={styles.login_user_cardd}>
         <div className={styles.Login_user_card_up}>
-          <button
-            className={styles.Login_user_user_button}
-          >
-            user
-          </button>
+          <button className={styles.Login_user_user_button}>user</button>
           <button
             onClick={navigateToCompany}
             className={styles.Login_user_company_button}
@@ -95,7 +120,7 @@ function LoginUser() {
               />
             </div>
 
-            <button type="submit" onClick={navigatetoUserPage} className={styles.Login_user_button }>
+            <button type="submit" className={styles.Login_user_button}>
               done
             </button>
           </form>

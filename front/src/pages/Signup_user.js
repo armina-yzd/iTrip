@@ -9,6 +9,9 @@ function SignupUser() {
     username: "",
     password: "",
   });
+  const [otp, setOtp] = useState("");
+  const [showOtpInput, setShowOtpInput] = useState(false);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -16,29 +19,63 @@ function SignupUser() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSendOtp = async (e) => {
     e.preventDefault();
-    console.log(formData);
+    setLoading(true);
+    try {
+      const response = await fetch("http://iam.localhost/api/user/sendOtp/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) throw new Error("Failed to send OTP");
+      const data = await response.json();
+      console.log("OTP Sent:", data);
+      setShowOtpInput(true);
+    } catch (err) {
+      console.error(err);
+      alert("Error sending verification code.");
+    } finally {
+      setLoading(false);
+    }
   };
+
+  const handleVerifyOtp = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const response = await fetch("http://iam.localhost/api/user/creatUser/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: formData.username,
+          email: formData.email,
+          password: formData.password,
+          otp: otp,
+        }),
+      });
+
+      if (!response.ok) throw new Error("Invalid OTP");
+      const data = await response.json();
+      console.log("Account verified:", data);
+
+      alert("Account successfully created!");
+      navigate("/toUserPage"); 
+    } catch (err) {
+      console.error(err);
+      alert("Verification failed.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const navigateTosuCompany = () => navigate("/tosucompany");
   const navigateback = () => navigate("/toHomePage");
 
   return (
     <div className={styles.Signup_user_container}>
-
-      <button
-        onClick={navigateback}
-        style={{
-          padding: "8px 12px",
-          backgroundColor: "#dbdfea",
-          color: "white",
-          borderRadius: "6px",
-          cursor: "pointer",
-          display: "flex",
-          alignItems: "center",
-          border: 0,
-        }}
-      >
+      <button onClick={navigateback} className={styles.back_button}>
         <FiArrowLeft size={16} />
       </button>
 
@@ -59,51 +96,75 @@ function SignupUser() {
             _______________________________
           </p>
 
-          <form onSubmit={handleSubmit} className={styles.Signup_user_form}>
-            <div className={styles.Signup_user_inputGroup}>
-              <label className={styles.Signup_user_label}>
-                enter your email
-              </label>
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                className={styles.Signup_user_input}
-                placeholder="......"
-                required
-              />
-            </div>
+          <form
+            onSubmit={showOtpInput ? handleVerifyOtp : handleSendOtp}
+            className={styles.Signup_user_form}
+          >
+            {!showOtpInput && (
+              <>
+                <div className={styles.Signup_user_inputGroup}>
+                  <label className={styles.Signup_user_label}>
+                    enter your email
+                  </label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    className={styles.Signup_user_input}
+                    placeholder="......"
+                    required
+                  />
+                </div>
 
-            <div className={styles.Signup_user_inputGroup}>
-              <label className={styles.Signup_user_label}>
-                enter your username
-              </label>
-              <input
-                type="text"
-                name="username"
-                value={formData.username}
-                onChange={handleChange}
-                className={styles.Signup_user_input}
-                placeholder="......"
-                required
-              />
-            </div>
+                <div className={styles.Signup_user_inputGroup}>
+                  <label className={styles.Signup_user_label}>
+                    enter your username
+                  </label>
+                  <input
+                    type="text"
+                    name="username"
+                    value={formData.username}
+                    onChange={handleChange}
+                    className={styles.Signup_user_input}
+                    placeholder="......"
+                    required
+                  />
+                </div>
 
-            <div className={styles.Signup_user_inputGroup}>
-              <label className={styles.Signup_user_label}>
-                make your own password
-              </label>
-              <input
-                type="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                className={styles.Signup_user_input}
-                placeholder="......"
-                required
-              />
-            </div>
+                <div className={styles.Signup_user_inputGroup}>
+                  <label className={styles.Signup_user_label}>
+                    make your own password
+                  </label>
+                  <input
+                    type="password"
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    className={styles.Signup_user_input}
+                    placeholder="......"
+                    required
+                  />
+                </div>
+              </>
+            )}
+
+            {showOtpInput && (
+              <div className={styles.Signup_user_inputGroup}>
+                <label className={styles.Signup_user_label}>
+                  enter verification code
+                </label>
+                <input
+                  type="text"
+                  name="otp"
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value)}
+                  className={styles.Signup_user_input}
+                  placeholder="6-digit code"
+                  required
+                />
+              </div>
+            )}
 
             <p
               onClick={() => navigate("/tologin")}
@@ -112,8 +173,16 @@ function SignupUser() {
               already have an account?
             </p>
 
-            <button type="submit" className={styles.Signup_user_button}>
-              send verification code
+            <button
+              type="submit"
+              className={styles.Signup_user_button}
+              disabled={loading}
+            >
+              {loading
+                ? "Please wait..."
+                : showOtpInput
+                ? "Done"
+                : "Send verification code"}
             </button>
           </form>
         </div>

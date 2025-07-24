@@ -18,8 +18,8 @@ import "./HomePage.css";
 
 export default function HomePage() {
   const navigate = useNavigate();
-  const [showTripType, setShowTripType] = useState(false);
-  const [tripType, setTripType] = useState("one way");
+  // const [showTripType, setShowTripType] = useState(false);
+  // const [tripType, setTripType] = useState("one way");
   const [activeTab, setActiveTab] = useState("airplane");
   const [showStartCalendar, setShowStartCalendar] = useState(false);
   const [showEndCalendar, setShowEndCalendar] = useState(false);
@@ -35,20 +35,20 @@ export default function HomePage() {
   };
 
 
-  const toggleTripType = () => {
-    setShowTripType(!showTripType);
-    setShowStartCalendar(false);
-    setShowEndCalendar(false);
-  };
+  // const toggleTripType = () => {
+  //   setShowTripType(!showTripType);
+  //   setShowStartCalendar(false);
+  //   setShowEndCalendar(false);
+  // };
 
-  const selectTripType = (type) => {
-    setTripType(type);
-    setShowTripType(false);
-    if (type === "one way") {
-      setEndDate("");
-      setSelectedEndDate(null);
-    }
-  };
+  // const selectTripType = (type) => {
+  //   setTripType(type);
+  //   setShowTripType(false);
+  //   if (type === "one way") {
+  //     setEndDate("");
+  //     setSelectedEndDate(null);
+  //   }
+  // };
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
@@ -61,12 +61,12 @@ export default function HomePage() {
     setShowEndCalendar(false);
   };
 
-  const handleEndDateClick = () => {
-    if (tripType === "two way") {
-      setShowEndCalendar(!showEndCalendar);
-      setShowStartCalendar(false);
-    }
-  };
+  // const handleEndDateClick = () => {
+  //   if (tripType === "two way") {
+  //     setShowEndCalendar(!showEndCalendar);
+  //     setShowStartCalendar(false);
+  //   }
+  // };
 
   const handleDateSelect = (date, isStartDate) => {
     const formattedDate = formatDate(date);
@@ -243,7 +243,7 @@ export default function HomePage() {
 
         {/* Search Fields */}
         <div className="search-box">
-          <div className="trip-type-container">
+          {/* <div className="trip-type-container">
             <button className="one-way" onClick={toggleTripType}>
               {tripType}
             </button>
@@ -263,7 +263,7 @@ export default function HomePage() {
                 </div>
               </div>
             )}
-          </div>
+          </div> */}
           <input placeholder="origin" />
           <input placeholder="destination" />
 
@@ -277,7 +277,7 @@ export default function HomePage() {
             {showStartCalendar && renderCalendar(true)}
           </div>
 
-          {tripType === "two way" && (
+          {/* {tripType === "two way" && (
             <div className="date-input-container">
               <input
                 placeholder="end"
@@ -287,9 +287,9 @@ export default function HomePage() {
               />
               {showEndCalendar && renderCalendar(false)}
             </div>
-          )}
+          )} */}
 
-          <input placeholder="p count" />
+          {/* <input placeholder="p count" /> */}
           <button className="search-button" onClick={navigateToSignup}>
             <FiSearch />
             <span>search</span>

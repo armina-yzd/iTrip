@@ -1,5 +1,4 @@
 :root {
-  /* Primary colors */
   --blue3: #c4dfdf;
   --blue2: #d2e9e9;
   --blue1: #e3f4f4;
@@ -10,6 +9,7 @@
   --purple15: #dee7ff;
   --gray: #8f8f8f;
 }
+
 .Signup_user_container {
   background-image: url("../assets/bg.jpg");
   display: flex;
@@ -18,8 +18,8 @@
   width: 100%;
   min-height: 100vh;
   background-color: #f5f5f5;
-  padding: 0px;
 }
+
 .Signup_user_cardd {
   width: 100%;
   display: flex;
@@ -42,17 +42,6 @@
   text-align: center;
 }
 
-.Signup_user_header {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 30px;
-}
-
-.Signup_user_userText {
-  font-size: 18px;
-  font-weight: normal;
-  color: var(--gray);
-}
 .Signup_user_user_button {
   background-color: var(--purple1);
   color: var(--gray);
@@ -61,13 +50,9 @@
   border-top-left-radius: 30px;
   padding: 10px;
   font-size: 16px;
-  font-weight: normal;
   width: 150px;
 }
-.Signup_user_companyText {
-  font-size: 18px;
-  color: #666;
-}
+
 .Signup_user_company_button {
   background-color: var(--purple1);
   color: var(--gray);
@@ -75,18 +60,18 @@
   border-top-right-radius: 30px;
   padding: 10px;
   font-size: 16px;
-  font-weight: normal;
   width: 150px;
   opacity: 50%;
   margin-left: -15px;
 }
+
 .Signup_user_loginTitle {
   font-size: 40px;
   font-weight: bolder;
   margin-bottom: 10px;
   color: var(--purple3);
-  margin-top: 0px;
 }
+
 .Signup_user_lineTitle {
   color: var(--purple3);
   margin-top: 5px;
@@ -94,6 +79,7 @@
   width: 100%;
   margin-bottom: 50px;
 }
+
 .Signup_user_form {
   display: flex;
   flex-direction: column;
@@ -118,20 +104,21 @@
   border: 1px solid #ddd;
   border-radius: 12px;
   font-size: 16px;
+  opacity: 0.8;
   outline: none;
   transition: border 0.3s;
-  opacity: 50%;
 }
 
 .Signup_user_input:hover {
-  border: 1px solid #999;
+  border-color: #999;
 }
 
 .Signup_user_input:focus {
-  border: 1px solid #007bff;
+  border-color: #007bff;
 }
+
 .Signup_user_loginPrompt {
-  color: var(--gray); /* Blue color like a link */
+  color: var(--gray);
   cursor: pointer;
   text-decoration: underline;
   margin-top: 10px;
@@ -139,18 +126,18 @@
 }
 
 .Signup_user_loginPrompt:hover {
-  color: var(--purple3); /* Darker blue on hover */
+  color: var(--purple3);
 }
+
 .Signup_user_button {
   background-color: var(--purple2);
-  color: rgb(0, 0, 0);
+  color: #000;
   border: none;
   border-radius: 20px;
   padding: 10px;
   font-size: 16px;
   font-weight: bold;
   cursor: pointer;
-  margin-top: 0px;
   transition: 0.3s;
   width: 100%;
 }
@@ -159,3 +146,14 @@
   background-color: var(--purple3);
 }
 
+.back_button {
+  padding: 8px 12px;
+  background-color: var(--purple2);
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  border: 0;
+  margin-bottom: 1rem;
+}
