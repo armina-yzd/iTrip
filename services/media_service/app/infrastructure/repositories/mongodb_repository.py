@@ -1,3 +1,4 @@
+from typing import List
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorGridFSBucket
 from bson import ObjectId
 from app.domain.models.media import MediaFile
@@ -19,7 +20,7 @@ class MongoDBMediaRepository(MediaRepository):
         )
         media.id = str(file_id)
         return media
-    
+
     async def get_by_id(self, file_id: str) -> tuple[MediaFile, bytes]:
         try:
             file_object = await self.fs.open_download_stream(ObjectId(file_id))
@@ -31,11 +32,11 @@ class MongoDBMediaRepository(MediaRepository):
                 content_type=metadata["content_type"],
                 size=metadata["size"],
                 upload_date=metadata["upload_date"],
-                owner_id=metadata.get("owner_id"),
-                metadata=metadata.get("metadata")
+                ticket_id=metadata["ticket_id"], 
+                metadata=metadata.get("metadata", {})
             )
             return media, file_data
-        except:
+        except Exception as e:
             raise FileNotFoundError(f"File with id {file_id} not found")
     
     async def delete(self, file_id: str) -> bool:
@@ -44,3 +45,27 @@ class MongoDBMediaRepository(MediaRepository):
             return True
         except:
             return False
+        
+    async def get_by_ticket_id(self, ticket_id: int) -> List[MediaFile]:
+        try:
+            cursor = self.db.fs.files.find({"metadata.ticket_id": ticket_id})
+            media_files = []
+
+            async for document in cursor:
+
+                media = MediaFile(
+                    id=str(document["_id"]),
+                    filename=document["filename"],
+                    content_type=document["metadata"].get("content_type", ""),
+                    size=document["length"],
+                    upload_date=document["uploadDate"],
+                    ticket_id=document["metadata"]["ticket_id"],
+                    metadata=document["metadata"].get("metadata", {})
+                )
+                media_files.append(media)
+
+            return media_files
+
+        except Exception as e:
+            print(f"Error getting media by ticket_id {ticket_id}: {str(e)}")
+            raise

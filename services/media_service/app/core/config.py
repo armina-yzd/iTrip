@@ -7,6 +7,7 @@ class Settings(BaseSettings):
     mongo_db_name: str = "Itrip"
     file_storage_path: str = "app/media"
     IAM_URL : str = config("IAM_URL")
+    USER_TICKET_URL : str = config("USER_TICKET_URL")
     
     class Config:
         env_file = ".env"
@@ -17,6 +18,5 @@ settings = Settings()
 def get_mongo_client() -> AsyncIOMotorClient:
     return AsyncIOMotorClient(settings.mongo_url)
 
-# Add this function
 def get_settings() -> Settings:
     return settings

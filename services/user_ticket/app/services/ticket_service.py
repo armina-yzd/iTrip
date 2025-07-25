@@ -127,3 +127,5 @@ class TicketService():
 
         return passengers_tickets
     
+    async def ticket_user(self, ticket_id: int) -> Ticket:
+        return self.ticket_repository.ticket_user(ticket_id)

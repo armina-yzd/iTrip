@@ -17,6 +17,7 @@ services:
     container_name: media_service
     environment:
       - IAM_URL=${IAM_URL}
+      - USER_TICKET_URL=${USER_TICKET_URL}
       - SECRET=${SECRET}
       - DATABASE_URL=mongodb://mongo:27017
       - DATABASE_NAME=Itrip

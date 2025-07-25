@@ -1,6 +1,6 @@
 from typing import Annotated
 from fastapi import APIRouter, Depends
-from app.domain.schemas.buy_ticket_schema import ServiceType
+from app.domain.schemas.buy_ticket_schema import TicketResponse
 
 from app.services.ticket_service import TicketService
 
@@ -13,3 +13,11 @@ async def ticket_count(
     service_type: str
 ):
     return await ticket_service.ticket_count(service_id,service_type)
+
+@router.get("/ticketUser/{ticket_id}",response_model=int)
+async def ticket_user(
+    ticket_service: Annotated[TicketService, Depends()],
+    ticket_id: int
+):
+    ticket = await ticket_service.ticket_user(ticket_id)
+    return ticket.user_id

@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import List
 from app.domain.models.media import MediaFile
 
 class MediaRepository(ABC):
@@ -12,4 +13,8 @@ class MediaRepository(ABC):
     
     @abstractmethod
     async def delete(self, file_id: str) -> bool:
+        pass
+
+    @abstractmethod
+    async def get_by_ticket_id(self, ticket_id: int) -> List[MediaFile]:
         pass

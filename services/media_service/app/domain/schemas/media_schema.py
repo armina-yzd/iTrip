@@ -7,12 +7,12 @@ class MediaBase(BaseModel):
     size: int
 
 class MediaCreate(MediaBase):
-    owner_id: str
+    ticket_id: int
 
 class MediaResponse(MediaBase):
     id: str
 
 class MediaDetails(MediaResponse):
     upload_date: datetime
-    owner_id: str
+    ticket_id: int
     metadata: dict = {}
