@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+
+  mongo:
+    image: mongo:latest
+    container_name: mongo_container
+    ports:
+      - "27017:27017"
+    networks:
+      - app-network
+
+  media:
+    build:
+      context: ../services/media_service
+      dockerfile: Dockerfile
+    container_name: media_service
+    environment:
+      - IAM_URL=${IAM_URL}
+      - SECRET=${SECRET}
+      - DATABASE_URL=mongodb://mongo:27017
+      - DATABASE_NAME=Itrip
+      - FILE_STORAGE_PATH=app/media
+    networks:
+      - app-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.media.rule=Host(`media.localhost`)"
+      - "traefik.http.services.media.loadbalancer.server.port=8000"
+    restart: unless-stopped
+    depends_on:
+      - mongo
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  postgres:
+  pgadmin:
+  letsencrypt:
+  esdata:

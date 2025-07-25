@@ -6,6 +6,7 @@ docker compose -f docker-compose.yml ^
                -f ..\services\manage_services\docker-compose.yml ^
                -f ..\services\user_ticket\docker-compose.yml ^
                -f ..\front\docker-compose.yml ^
+               -f ..\services\media_service\docker-compose.yml ^
                down
 REM Rebuild and start fresh
 docker compose -f docker-compose.yml ^
@@ -14,6 +15,7 @@ docker compose -f docker-compose.yml ^
                -f ..\services\manage_services\docker-compose.yml ^
                -f ..\services\user_ticket\docker-compose.yml ^
                -f ..\front\docker-compose.yml ^
+               -f ..\services\media_service\docker-compose.yml ^
                up -d --build
 
 
