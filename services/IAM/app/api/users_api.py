@@ -44,12 +44,15 @@ async def send_otp(
 ):
     return await user_otp.user_otp(user)
 
-@router.post("/creatUser/", response_model=VerifyOtpResponse)
+@router.post("/creatUser/", response_model=Token)
 async def create_user(
     user: VerifyOtp, 
-    verify_user: Annotated[RegisterService, Depends()]
+    verify_user: Annotated[RegisterService, Depends()],
+    auth_service: Annotated[AuthService, Depends()],
 ):
-    return await verify_user.verify_user(user)
+    verify_user_otp = await verify_user.verify_user(user)
+    return auth_service.create_tokens(user.email,"user")
+
 
 @router.post("/wallet/{user_id}", response_model=UserResponse)
 async def change_wallet(

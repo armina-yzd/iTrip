@@ -42,12 +42,14 @@ async def send_otp(
 ):
     return await company_otp.company_otp(company)
 
-@router.post("/creatCompany/", response_model=VerifyOtpResponse)
+@router.post("/creatCompany/", response_model=Token)
 async def create_company(
     company: VerifyOtp, 
-    verify_company: Annotated[CompanyRegister, Depends()]
+    verify_company: Annotated[CompanyRegister, Depends()],
+    auth_service: Annotated[AuthService, Depends()],
 ):
-    return await verify_company.verify_company(company)
+    verify_company_otp = await verify_company.verify_company(company)
+    return auth_service.create_tokens(company.email,"company")
 
 @router.get("/companyName/{id}", response_model=str)
 async def company_name(
