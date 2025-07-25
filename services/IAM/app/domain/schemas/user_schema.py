@@ -39,3 +39,6 @@ class VerifyOtpResponse(BaseModel):
 class WalletUpdateRequest(BaseModel):
     new_wallet: int
     secret_code: str
+
+class WalletUpdateAdmin(BaseModel):
+    new_wallet: int

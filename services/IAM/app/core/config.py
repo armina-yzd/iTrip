@@ -1,6 +1,4 @@
 from pydantic import BaseModel
-from dotenv import load_dotenv
-from pathlib import Path
 from decouple import config
 
 class Settings(BaseModel):

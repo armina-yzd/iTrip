@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Boolean,Integer
+from sqlalchemy import Column, String,Integer
 
 from app.core.db.database import get_entitybase
 

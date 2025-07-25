@@ -1,6 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException,status
 from typing import Annotated
-from sqlalchemy.orm import Session
 from typing import List
 from fastapi.security import OAuth2PasswordRequestForm
 from decouple import config
@@ -13,11 +12,10 @@ from app.domain.schemas.user_schema import (
     UserResponseOtp,
     UserOtp,
     VerifyOtp,
-    VerifyOtpResponse,
-    WalletUpdateRequest
+    WalletUpdateRequest,
+    WalletUpdateAdmin
 )
 from app.domain.schemas.token_schema import Token
-from app.core.db.database import get_db
 from app.services.auth.auth import AuthService , get_current_user, get_current_admin
 from app.services.user.register_service import RegisterService
 from app.services.user.user_service import UserService
@@ -53,7 +51,6 @@ async def create_user(
     verify_user_otp = await verify_user.verify_user(user)
     return auth_service.create_tokens(user.email,"user")
 
-
 @router.post("/wallet/{user_id}", response_model=UserResponse)
 async def change_wallet(
     user_id: int,
@@ -66,6 +63,15 @@ async def change_wallet(
             detail="Not Allowed"
         )
     return await user_service.change_user_wallet(user_id,request.new_wallet)
+
+@router.post("/wallet_admin/{user_id}", response_model=UserResponse)
+async def change_wallet_admin(
+    current_admin: Annotated[Admin, Depends(get_current_admin)],
+    user_id: int,
+    request: WalletUpdateAdmin,
+    user_service: Annotated[UserService, Depends()]
+    ):
+    return await user_service.change_user_wallet_admin(user_id,request.new_wallet)
 
 @router.get("/get_users_admin/", response_model=List[UserResponse])
 async def get_users(

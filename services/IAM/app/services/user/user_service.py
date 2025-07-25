@@ -53,3 +53,6 @@ class UserService():
                 detail="wallet cant be less than zero"
             )
         return self.user_repository.change_user_wallet(id,new_wallet)
+    
+    async def change_user_wallet_admin(self, id:int, new_wallet:int) -> User:
+        return self.user_repository.change_user_wallet_admin(id,new_wallet)

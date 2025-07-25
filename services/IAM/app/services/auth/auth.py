@@ -240,7 +240,6 @@ async def get_current_admin(
         
     return admin
 
-
 async def get_current_company(
         token: Annotated[str, Depends(oauth2_scheme_company)],
         company_service: Annotated[CompanyService, Depends()],

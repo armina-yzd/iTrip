@@ -1,7 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from typing import Annotated
 from sqlalchemy.orm import Session
-from typing import List
 from fastapi.security import OAuth2PasswordRequestForm
 
 from app.domain.models.admin import Admin
