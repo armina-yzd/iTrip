@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   FaFacebook,
   FaInstagram,
@@ -8,14 +8,41 @@ import {
 import { LuCircleFadingPlus } from "react-icons/lu";
 import { TbCircleLetterC } from "react-icons/tb";
 import "./CompanyProfile.css";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../AuthContext";
+
 const CompanyProfile = () => {
-  const [tab, setTab] = useState("profile");
+  const { token, logout } = useAuth();
+  const [company, setCompany] = useState(null);
+  const navigate = useNavigate();
+
+  // ✅ Fetch company data using token
+  useEffect(() => {
+    if (!token) return;
+
+    fetch("http://iam.localhost/api/company/me", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Unauthorized");
+        return res.json();
+      })
+      .then((data) => setCompany(data))
+      .catch((err) => {
+        console.error("Error fetching company data:", err);
+        logout(); // optional: log out if invalid token
+        navigate("/tologin");
+      });
+  }, [token, logout, navigate]);
+
   return (
     <div>
       <header className="search-ticket-header">
         <div className="header-left">
           <TbCircleLetterC size={27} />
-          <span className="header-text">Kish Air</span>
+          <span className="header-text">{company?.name || "Loading..."}</span>
         </div>
         <h1 className="header-title">ITRIP</h1>
         <div className="header-right">
@@ -23,44 +50,24 @@ const CompanyProfile = () => {
           <LuCircleFadingPlus size={25} />
         </div>
       </header>
+
       <div className="container">
         <div className="tabs">
-          <span
-            className={tab === "profile" ? "tab active" : "tab"}
-            onClick={() => setTab("profile")}
-          >
-            profile
-          </span>
-          <span
-            className={tab === "notification" ? "tab active" : "tab"}
-            onClick={() => setTab("notification")}
-          >
-            notification
-          </span>
+          <span className="tab active">profile</span>
         </div>
 
-        {tab === "profile" ? (
-          <div className="profile-info">
-            <p>
-              <span className="label">name :</span> Kish Air
-            </p>
-            <p>
-              <span className="label">email :</span> KishAir@..
-            </p>
+        <div className="profile-info">
+          <p>
+            <span className="label">name :</span> {company?.name || "Loading..."}
+          </p>
+          <p>
+            <span className="label">email :</span> {company?.email || "Loading..."}
+          </p>
 
-            <button className="logout-btn">log out</button>
-          </div>
-        ) : (
-          <div className="notification-box">
-            <div className="warning">
-              <p>
-                your have many objector for your last service if we recive more
-                bad comment about your company we have to ban your company from
-                our website.
-              </p>
-            </div>
-          </div>
-        )}
+          <button className="logout-btn" onClick={logout}>
+            log out
+          </button>
+        </div>
       </div>
 
       <footer className="CompanyPage-footer">

@@ -41,11 +41,11 @@ class TrainSService():
             )
         )
     
-    async def get_service_by_company_id(self, id: int) -> list[TrainResponse]:
+    async def get_service_by_company_id(self, id: int) -> List[TrainResponse]:
         train_d = self.train_service_repository.get_service_by_company_id(id)
         return await self.change_to_response_format(train_d)
     
-    async def get_service_admin(self) -> list[TrainResponse]:
+    async def get_service_admin(self) -> List[TrainResponse]:
         train_d = self.train_service_repository.get_service_admin()
         return await self.change_to_response_format(train_d)
     
@@ -57,10 +57,10 @@ class TrainSService():
         capacity = self.train_service_repository.get_capacity_by_id(id)
         return capacity - ticket_count
     
-    async def filter_service_by_place_and_date(self,from_location:str,to_location:str, start_date:date) -> list[TrainService]:
+    async def filter_service_by_place_and_date(self,from_location:str,to_location:str, start_date:date) -> List[TrainService]:
         return self.train_service_repository.filter_service_by_place_and_date(from_location,to_location,start_date)
     
-    async def get_filtered_services(self,from_location:str,to_location:str, start_date:date) -> list[TrainResponse]:
+    async def get_filtered_services(self,from_location:str,to_location:str, start_date:date) -> List[TrainResponse]:
         train_d = await self.filter_service_by_place_and_date(from_location,
                                                               to_location,
                                                               start_date)
@@ -81,7 +81,7 @@ class TrainSService():
             )
         return view_ticket
     
-    async def change_to_response_format(self, train_d:list[TrainService]) -> list[TrainResponse]:
+    async def change_to_response_format(self, train_d:List[TrainService]) -> List[TrainResponse]:
         train_services : List[TrainResponse] = []
         for train in train_d:
             company_name = await self.iam_client.company_name(train.company_id)

@@ -41,11 +41,11 @@ class BusSService():
             )
         )
 
-    async def get_service_by_company_id(self, id: int) -> list[BusResponse]:
+    async def get_service_by_company_id(self, id: int) -> List[BusResponse]:
         bus_d = self.bus_service_repository.get_service_by_company_id(id)
         return await self.change_to_response_format(bus_d)
     
-    async def get_service_admin(self) -> list[BusResponse]:
+    async def get_service_admin(self) -> List[BusResponse]:
         bus_d = self.bus_service_repository.get_service_admin()
         return await self.change_to_response_format(bus_d)
     
@@ -72,18 +72,18 @@ class BusSService():
             )
         return view_ticket
     
-    async def filter_service_by_place_and_date(self,from_location:str,to_location:str, start_date:date) -> list[BusService]:
+    async def filter_service_by_place_and_date(self,from_location:str,to_location:str, start_date:date) -> List[BusService]:
         return self.bus_service_repository.filter_service_by_place_and_date(from_location,
                                                                             to_location,
                                                                             start_date)
     
-    async def get_filtered_services(self,from_location:str,to_location:str, start_date:date) -> list[BusResponse]:
+    async def get_filtered_services(self,from_location:str,to_location:str, start_date:date) -> List[BusResponse]:
         bus_d = await self.filter_service_by_place_and_date(from_location,
                                                               to_location,
                                                               start_date)
         return await self.change_to_response_format(bus_d)
         
-    async def change_to_response_format(self, bus_d:list[BusService]) -> list[BusResponse]:
+    async def change_to_response_format(self, bus_d:List[BusService]) -> List[BusResponse]:
         bus_services : List[BusResponse] = []
         for bus in bus_d:
             company_name = await self.iam_client.company_name(bus.company_id)

@@ -42,11 +42,11 @@ class TourSService():
             )
         )
     
-    async def get_service_by_company_id(self, id: int) -> list[TourResponse]:
+    async def get_service_by_company_id(self, id: int) -> List[TourResponse]:
         tour_d =  self.tour_service_repository.get_service_by_company_id(id)
         return await self.change_to_response_format(tour_d)
     
-    async def get_service_admin(self) -> list[TourResponse]:
+    async def get_service_admin(self) -> List[TourResponse]:
         tour_d = self.tour_service_repository.get_service_admin()
         return await self.change_to_response_format(tour_d)
     
@@ -73,17 +73,17 @@ class TourSService():
             )
         return view_ticket
     
-    async def filter_service_by_place_and_date(self,from_location:str,to_location:str, start_date:date) -> list[TourService]:
+    async def filter_service_by_place_and_date(self,from_location:str,to_location:str, start_date:date) -> List[TourService]:
         return self.tour_service_repository.filter_service_by_place_and_date(from_location,to_location,start_date)
     
-    async def get_filtered_services(self,from_location:str,to_location:str, start_date:date) -> list[TourResponse]:
+    async def get_filtered_services(self,from_location:str,to_location:str, start_date:date) -> List[TourResponse]:
         tour_d = await self.filter_service_by_place_and_date(from_location,
                                                               to_location,
                                                               start_date)
         return await self.change_to_response_format(tour_d)
         
 
-    async def change_to_response_format(self, tour_d:list[TourService]) -> list[TourResponse]:
+    async def change_to_response_format(self, tour_d:List[TourService]) -> List[TourResponse]:
         tour_services : List[TourResponse] = []
         for tour in tour_d:
             company_name = await self.iam_client.company_name(tour.company_id)

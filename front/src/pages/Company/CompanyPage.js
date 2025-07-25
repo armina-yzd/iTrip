@@ -116,8 +116,8 @@ const CompanyPage = () => {
             </div>
             {selectedFlight?.id === service.id && (
               <div className="cpflight-detail-frame">
-                <p>Flight Number: {service.flight_num}</p>
-                <p>Airplane: {service.airplane_model}</p>
+                <p>Flight Number: {service.vehicle_num}</p>
+                <p>Airplane: {service.vehicle_type}</p>
                 <p>Remaining Capacity: {service.capacity}</p>
               </div>
             )}

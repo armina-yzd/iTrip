@@ -1,4 +1,5 @@
 import React from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import "./Ticket.css";
 import { FaUserCircle, FaSuitcase } from "react-icons/fa";
 import {
@@ -9,33 +10,29 @@ import {
 } from "react-icons/fa6";
 
 const Ticket = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const tickets = location?.state?.tickets || [];
+
+  if (!tickets.length) {
+    return (
+      <div className="ticket-container">
+        <h2>No ticket found</h2>
+        <button onClick={() => navigate("/toUserPage")}>Back to home</button>
+      </div>
+    );
+  }
+
   const handleDownload = () => {
     alert("Ticket downloaded successfully!");
   };
-
-  const tickets = [
-    {
-      from: "Tehran",
-      to: "Mashhad",
-      date: "2/1/2025",
-      time: "22:45",
-      name: "Narjes Gorji",
-      flyNum: "1234",
-      price: "200$",
-      exporter: "Itrip",
-      bookDate: "12/12/2024",
-      tax: "2$",
-      seat: "22",
-      bookTime: "8:30",
-    },
-  ];
 
   return (
     <div>
       <header className="search-ticket-header">
         <div className="header-left">
           <FaUserCircle size={22} />
-          <span className="header-text">Narjes Gorji</span>
+          <span className="header-text">Your Tickets</span>
         </div>
         <h1 className="header-title">ITRIP</h1>
         <div className="header-right">
@@ -52,63 +49,14 @@ const Ticket = () => {
 
           <div className="ticket-details">
             <div className="ticket-section">
-              <div className="detail-row">
-                <span className="detail-label">from:</span>
-                <span className="detail-value">{ticket.from}</span>
-              </div>
-              <div className="detail-row">
-                <span className="detail-label">date:</span>
-                <span className="detail-value">{ticket.date}</span>
-              </div>
-              <div className="detail-row">
-                <span className="detail-label">passenger name:</span>
-                <span className="detail-value">{ticket.name}</span>
-              </div>
+              <p><strong>Name:</strong> {ticket.passenger_response.first_name} {ticket.passenger_response.last_name}</p>
+              <p><strong>Gender:</strong> {ticket.passenger_response.gender}</p>
+              <p><strong>National ID:</strong> {ticket.passenger_response.national_id}</p>
             </div>
-
             <div className="ticket-section">
-              <div className="detail-row">
-                <span className="detail-label">to:</span>
-                <span className="detail-value">{ticket.to}</span>
-              </div>
-              <div className="detail-row">
-                <span className="detail-label">time:</span>
-                <span className="detail-value">{ticket.time}</span>
-              </div>
-              <div className="detail-row">
-                <span className="detail-label">fly num:</span>
-                <span className="detail-value">{ticket.flyNum}</span>
-              </div>
-            </div>
-
-            <div className="ticket-section">
-              <div className="detail-row">
-                <span className="detail-label">price:</span>
-                <span className="detail-value">{ticket.price}</span>
-              </div>
-              <div className="detail-row">
-                <span className="detail-label">exporter:</span>
-                <span className="detail-value">{ticket.exporter}</span>
-              </div>
-              <div className="detail-row">
-                <span className="detail-label">book date:</span>
-                <span className="detail-value">{ticket.bookDate}</span>
-              </div>
-            </div>
-
-            <div className="ticket-section">
-              <div className="detail-row">
-                <span className="detail-label">tax:</span>
-                <span className="detail-value">{ticket.tax}</span>
-              </div>
-              <div className="detail-row">
-                <span className="detail-label">sit number:</span>
-                <span className="detail-value">{ticket.seat}</span>
-              </div>
-              <div className="detail-row">
-                <span className="detail-label">book time:</span>
-                <span className="detail-value">{ticket.bookTime}</span>
-              </div>
+              <p><strong>Seat:</strong> {ticket.ticket_response.seat_num}</p>
+              <p><strong>Serial:</strong> {ticket.ticket_response.ticket_serial}</p>
+              <p><strong>Tracking:</strong> {ticket.ticket_response.tracking_code}</p>
             </div>
           </div>
 

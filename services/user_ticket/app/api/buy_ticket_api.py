@@ -1,4 +1,4 @@
-from typing import Annotated
+from typing import Annotated, List
 from fastapi import APIRouter, Depends, HTTPException,status
 
 from app.domain.schemas.token_schema import TokenData
@@ -30,11 +30,11 @@ async def create_payment(
                                                 current_user.id,service_id,
                                                 payment_create.service_type)
 
-@router.post("/buyTicket/{service_id}",response_model=list[BuyTicketResponse])
+@router.post("/buyTicket/{service_id}",response_model=List[BuyTicketResponse])
 async def buy_passenger(
     current_user: Annotated[TokenData, Depends(get_current_user)], 
     payment_id: int,
-    buy_ticket_create: list[BuyTicketCreate],
+    buy_ticket_create: List[BuyTicketCreate],
     ticket_service: Annotated[TicketService, Depends()], 
 ):
     return await ticket_service.buy_ticket(payment_id,buy_ticket_create,current_user.id)

@@ -43,28 +43,28 @@ async def upload_file(
             detail=str(e)
         )
 
-@router.get("/{file_id}")
-async def download_file(
-    file_id: str,
-    media_service: MediaService = Depends(get_media_service)
-):
-    try:
-        media, file_data = await media_service.download_media(file_id)
-        return StreamingResponse(
-            io.BytesIO(file_data),
-            media_type=media.content_type,
-            headers={"Content-Disposition": f"filename={media.filename}"}
-        )
-    except FileNotFoundError:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="File not found"
-        )
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(e)
-        )
+# @router.get("/{file_id}")
+# async def download_file(
+#     file_id: str,
+#     media_service: MediaService = Depends(get_media_service)
+# ):
+#     try:
+#         media, file_data = await media_service.download_media(file_id)
+#         return StreamingResponse(
+#             io.BytesIO(file_data),
+#             media_type=media.content_type,
+#             headers={"Content-Disposition": f"filename={media.filename}"}
+#         )
+#     except FileNotFoundError:
+#         raise HTTPException(
+#             status_code=status.HTTP_404_NOT_FOUND,
+#             detail="File not found"
+#         )
+#     except Exception as e:
+#         raise HTTPException(
+#             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+#             detail=str(e)
+#         )
 
 @router.delete("/{file_id}")
 async def delete_file(

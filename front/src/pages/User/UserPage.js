@@ -163,7 +163,7 @@ export default function UserPage() {
 
       <div className="nav-tabs">
         <div className="tab-div">
-          {["bus", "train", "airplane", "tour"].map((t) => (
+          {["bus", "train", "airplane"].map((t) => (
             <div
               key={t}
               className={`tab-item ${activeTab === t ? "active" : ""}`}

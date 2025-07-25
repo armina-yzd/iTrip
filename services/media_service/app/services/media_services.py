@@ -25,10 +25,10 @@ class MediaService:
             raise ValueError("Filename and file data are required")
         return await self.media_repository.save(media, file_data)
     
-    async def download_media(self, file_id: str) -> Tuple[MediaFile, bytes]:
-        if not file_id:
-            raise ValueError("File ID is required")
-        return await self.media_repository.get_by_id(file_id)
+    # async def download_media(self, file_id: str) -> Tuple[MediaFile, bytes]:
+    #     if not file_id:
+    #         raise ValueError("File ID is required")
+    #     return await self.media_repository.get_by_id(file_id)
     
     async def delete_media(self, file_id: str,ticket_id: int,user_id: int) -> bool:
         ticket_user:int = await self.ut_client.ticket_user(ticket_id)

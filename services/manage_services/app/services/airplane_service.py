@@ -40,11 +40,11 @@ class AirplaneSService():
             )
         )
     
-    async def get_service_by_company_id(self, id: int) -> list[AirplainResponse]:
+    async def get_service_by_company_id(self, id: int) -> List[AirplainResponse]:
         airplane_d = self.airplane_service_repository.get_service_by_company_id(id)
         return await self.change_to_response_format(airplane_d)
     
-    async def get_service_admin(self) -> list[AirplainResponse]:
+    async def get_service_admin(self) -> List[AirplainResponse]:
         airplane_d = self.airplane_service_repository.get_service_admin()
         return await self.change_to_response_format(airplane_d)
 
@@ -71,16 +71,16 @@ class AirplaneSService():
             )
         return view_ticket
     
-    async def filter_service_by_place_and_date(self,from_location:str,to_location:str, start_date:date) -> list[AirplaneService]:
+    async def filter_service_by_place_and_date(self,from_location:str,to_location:str, start_date:date) -> List[AirplaneService]:
         return self.airplane_service_repository.filter_service_by_place_and_date(from_location,to_location,start_date)
 
-    async def get_filtered_services(self,from_location:str,to_location:str, start_date:date) -> list[AirplainResponse]:
+    async def get_filtered_services(self,from_location:str,to_location:str, start_date:date) -> List[AirplainResponse]:
         airplane_d = await self.filter_service_by_place_and_date(from_location,
                                                               to_location,
                                                               start_date)
         return await self.change_to_response_format(airplane_d)
         
-    async def change_to_response_format(self, airplane_d:list[AirplaneService]) -> list[AirplainResponse]:
+    async def change_to_response_format(self, airplane_d:List[AirplaneService]) -> List[AirplainResponse]:
         airplane_services : List[AirplainResponse] = []
         for airplane in airplane_d:
             company_name = await self.iam_client.company_name(airplane.company_id)

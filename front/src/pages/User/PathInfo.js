@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useAuth } from "../AuthContext";
 import {
   FaUserCircle,
   FaSuitcase,
   FaPlane,
-  FaUser,
   FaUserFriends,
   FaTrash,
 } from "react-icons/fa";
@@ -16,65 +16,123 @@ import {
 } from "react-icons/fa6";
 import "./PathInfo.css";
 
-const SearchTicket = () => {
+const PathInfo = () => {
   const navigate = useNavigate();
-  const [activeSort, setActiveSort] = useState("suggestion");
-  const [showInfo, setShowInfo] = useState(false);
-  const [showRules, setShowRules] = useState(false);
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const location = useLocation();
+  const { token } = useAuth();
 
-  const [passengers, setPassengers] = useState([{ id: Date.now() }]);
+  const [passengers, setPassengers] = useState([
+    { id: Date.now(), first_name: "", last_name: "", gender: "", national_id: "" },
+  ]);
+
+  const [paymentMethod] = useState("wallet");
+
+  const serviceId = location?.state?.serviceId;
+  const serviceType = location?.state?.serviceType;
+  const price = location?.state?.price;
+
+  if (!serviceId || !serviceType || !price) {
+    return (
+      <div className="error-page">
+        <h2>Missing booking information.</h2>
+        <p>Please return to the previous page and select a ticket again.</p>
+        <button onClick={() => navigate("/toUserPage")}>Back to Home</button>
+      </div>
+    );
+  }
 
   const handleAddPassenger = () => {
-    setPassengers([...passengers, { id: Date.now() }]);
+    setPassengers([
+      ...passengers,
+      { id: Date.now(), first_name: "", last_name: "", gender: "", national_id: "" },
+    ]);
   };
+
   const handleDeletePassenger = (id) => {
     setPassengers(passengers.filter((p) => p.id !== id));
   };
 
-  const navigateToTicket = () => {
-    navigate("/toTicket");
+  const handleChange = (id, field, value) => {
+    setPassengers((prev) =>
+      prev.map((p) => (p.id === id ? { ...p, [field]: value } : p))
+    );
   };
 
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
-      if (window.innerWidth < 768) {
-        setShowInfo(false);
-        setShowRules(false);
-      }
-    };
+  const handleSubmit = async () => {
+    try {
+      const ticket_num = passengers.length;
+      const paid = ticket_num * price;
+      console.log(serviceType)
+      const bodyData ={
+          discount_id: 0,
+          service_type: serviceType,
+          paid,
+          ticket_num,
+          purchase_method: paymentMethod,
+      };
+      console.log(bodyData);
+      // 1. Create Payment
+      const paymentRes = await fetch(`http://user_ticket.localhost/api/Ticket/payment/${serviceId}`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          discount_id: 0,
+          service_type: serviceType,
+          paid,
+          ticket_num,
+          purchase_method: paymentMethod,
+        }),
+      });
 
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+      if (!paymentRes.ok) throw new Error("Payment failed");
+      const paymentData = await paymentRes.json();
 
-  const flightData = {
-    from: "Tehran 22:45",
-    to: "Mashhad 23:55",
-    airline: "kish air",
-    price: "200$",
-    capacity: "10",
+      // 2. Create Tickets
+      const buyTicketData = passengers.map((p, i) => ({
+        passenger_create: {
+          gender: p.gender.toLowerCase(),
+          first_name: p.first_name,
+          last_name: p.last_name,
+          national_id: p.national_id,
+        },
+        ticket_create: {
+          ticket_serial: 1000 + i,
+          tracking_code: 5000 + i,
+          seat_num: i + 1,
+        },
+      }));
+
+      const ticketRes = await fetch(
+        `http://user_ticket.localhost/api/Ticket/buyTicket/${serviceId}?payment_id=${paymentData.id}`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(buyTicketData),
+        }
+      );
+
+      if (!ticketRes.ok) throw new Error("Ticket purchase failed");
+
+      const ticketResults = await ticketRes.json();
+      navigate("/toTicket", { state: { tickets: ticketResults } });
+    } catch (err) {
+      console.error("Purchase error:", err);
+      alert("An error occurred during ticket purchase.");
+    }
   };
-
-  const renderFlightTimes = () => (
-    <div className="flight-times">
-      <div className="from">
-        <em>{flightData.from}</em>
-      </div>
-      {!isMobile && <div className="dots">................</div>}
-      <div className="to">
-        <em>{flightData.to}</em>
-      </div>
-    </div>
-  );
 
   return (
     <div className="search-ticket-container">
       <header className="search-ticket-header">
         <div className="header-left">
           <FaUserCircle size={22} />
-          <span className="header-text">Narjes Gorji</span>
+          <span className="header-text">Passenger Info</span>
         </div>
         <h1 className="header-title">ITRIP</h1>
         <div className="header-right">
@@ -83,51 +141,53 @@ const SearchTicket = () => {
         </div>
       </header>
 
-      <div className="flight-card">
-        <div className="flight-info">
-          <div className="flight-icon">
-            <FaPlane size={20} />
-          </div>
-          {renderFlightTimes()}
-          <div className="airline">{flightData.airline}</div>
-        </div>
-
-        <div className="flight-actions">
-          <div className="price">{flightData.price}</div>
-          <div className="capacity">capacity remain: {flightData.capacity}</div>
-        </div>
-      </div>
       <div className="passenger-container">
-      {passengers.map((passenger, index) => (
-        <div className="form-box" key={passenger.id}>
-          <div className="form-header">
-            <FaUser className="form-icon" />
-            <span>passenger info {index + 1}</span>
-            <button
-              className="delete-btn"
-              onClick={() => handleDeletePassenger(passenger.id)}
-              title="Delete passenger"
-            >
-              <FaTrash />
-            </button>
+        {passengers.map((p, i) => (
+          <div className="form-box" key={p.id}>
+            <div className="form-header">
+              <FaPlane className="form-icon" />
+              <span>Passenger {i + 1}</span>
+              <button className="delete-btn" onClick={() => handleDeletePassenger(p.id)}>
+                <FaTrash />
+              </button>
+            </div>
+            <div className="form-inputs">
+              <input
+                type="text"
+                placeholder="First Name"
+                value={p.first_name}
+                onChange={(e) => handleChange(p.id, "first_name", e.target.value)}
+              />
+              <input
+                type="text"
+                placeholder="Last Name"
+                value={p.last_name}
+                onChange={(e) => handleChange(p.id, "last_name", e.target.value)}
+              />
+              <input
+                type="text"
+                placeholder="Gender (male/female)"
+                value={p.gender}
+                onChange={(e) => handleChange(p.id, "gender", e.target.value)}
+              />
+              <input
+                type="text"
+                placeholder="National ID"
+                value={p.national_id}
+                onChange={(e) => handleChange(p.id, "national_id", e.target.value)}
+              />
+            </div>
           </div>
-          <div className="form-inputs">
-            <input type="text" placeholder="name" />
-            <input type="text" placeholder="last name" />
-            <input type="text" placeholder="gender" />
-            <input type="text" placeholder="national id" />
-          </div>
-        </div>
-      ))}
+        ))}
 
-      <div className="bottom-bar">
-        <button className="add-btn" onClick={handleAddPassenger}>
-          <FaUserFriends className="icon" />
-          new passenger
-        </button>
-        <button className="done-btn" onClick={navigateToTicket}>Done</button>
+        <div className="bottom-bar">
+          <button className="add-btn" onClick={handleAddPassenger}>
+            <FaUserFriends className="icon" />
+            Add Passenger
+          </button>
+          <button className="done-btn" onClick={handleSubmit}>Done</button>
+        </div>
       </div>
-    </div>
 
       <footer className="search-ticket-footer">
         <p>You dream it, We'll ticket it</p>
@@ -142,4 +202,4 @@ const SearchTicket = () => {
   );
 };
 
-export default SearchTicket;
+export default PathInfo;
