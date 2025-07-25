@@ -15,11 +15,7 @@ function LoginUser() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // const handleSubmit = (e) => {
-  //   e.preventDefault();
-  //   console.log(formData);
-  //   // Add your login logic here
-  // };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 

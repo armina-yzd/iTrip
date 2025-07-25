@@ -18,8 +18,6 @@ import "./HomePage.css";
 
 export default function HomePage() {
   const navigate = useNavigate();
-  // const [showTripType, setShowTripType] = useState(false);
-  // const [tripType, setTripType] = useState("one way");
   const [activeTab, setActiveTab] = useState("airplane");
   const [showStartCalendar, setShowStartCalendar] = useState(false);
   const [showEndCalendar, setShowEndCalendar] = useState(false);
@@ -35,21 +33,6 @@ export default function HomePage() {
   };
 
 
-  // const toggleTripType = () => {
-  //   setShowTripType(!showTripType);
-  //   setShowStartCalendar(false);
-  //   setShowEndCalendar(false);
-  // };
-
-  // const selectTripType = (type) => {
-  //   setTripType(type);
-  //   setShowTripType(false);
-  //   if (type === "one way") {
-  //     setEndDate("");
-  //     setSelectedEndDate(null);
-  //   }
-  // };
-
   const handleTabClick = (tab) => {
     setActiveTab(tab);
     setShowStartCalendar(false);
@@ -60,13 +43,6 @@ export default function HomePage() {
     setShowStartCalendar(!showStartCalendar);
     setShowEndCalendar(false);
   };
-
-  // const handleEndDateClick = () => {
-  //   if (tripType === "two way") {
-  //     setShowEndCalendar(!showEndCalendar);
-  //     setShowStartCalendar(false);
-  //   }
-  // };
 
   const handleDateSelect = (date, isStartDate) => {
     const formattedDate = formatDate(date);
@@ -243,27 +219,7 @@ export default function HomePage() {
 
         {/* Search Fields */}
         <div className="search-box">
-          {/* <div className="trip-type-container">
-            <button className="one-way" onClick={toggleTripType}>
-              {tripType}
-            </button>
-            {showTripType && (
-              <div className="trip-type-dropdown">
-                <div
-                  className="trip-type-option"
-                  onClick={() => selectTripType("one way")}
-                >
-                  one way
-                </div>
-                <div
-                  className="trip-type-option"
-                  onClick={() => selectTripType("two way")}
-                >
-                  two way
-                </div>
-              </div>
-            )}
-          </div> */}
+         
           <input placeholder="origin" />
           <input placeholder="destination" />
 
@@ -277,17 +233,6 @@ export default function HomePage() {
             {showStartCalendar && renderCalendar(true)}
           </div>
 
-          {/* {tripType === "two way" && (
-            <div className="date-input-container">
-              <input
-                placeholder="end"
-                value={endDate}
-                onClick={handleEndDateClick}
-                readOnly
-              />
-              {showEndCalendar && renderCalendar(false)}
-            </div>
-          )} */}
 
           {/* <input placeholder="p count" /> */}
           <button className="search-button" onClick={navigateToSignup}>
@@ -306,12 +251,12 @@ export default function HomePage() {
       </p>
 
       {/* Travel Blog CTA */}
-      <div className="blog-button-container">
+      {/* <div className="blog-button-container">
         <button className="blog-button">
           <span>travel blog</span>
           <p>share your experience</p>
         </button>
-      </div>
+      </div> */}
 
       {/* Footer */}
       <footer className="HomePage_footer">

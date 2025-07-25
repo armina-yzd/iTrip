@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   FaUserCircle,
@@ -15,11 +15,12 @@ import {
   FaWhatsapp,
 } from "react-icons/fa6";
 import "./UserPage.css";
+import { useAuth } from "../AuthContext"; 
 
 export default function UserPage() {
   const navigate = useNavigate();
-  // const [showTripType, setShowTripType] = useState(false);
-  // const [tripType, setTripType] = useState("one way");
+  const { token } = useAuth(); 
+
   const [activeTab, setActiveTab] = useState("airplane");
   const [showStartCalendar, setShowStartCalendar] = useState(false);
   const [showEndCalendar, setShowEndCalendar] = useState(false);
@@ -40,21 +41,6 @@ export default function UserPage() {
     navigate("/toProfile");
   };
 
-  // const toggleTripType = () => {
-  //   setShowTripType(!showTripType);
-  //   setShowStartCalendar(false);
-  //   setShowEndCalendar(false);
-  // };
-
-  // const selectTripType = (type) => {
-  //   setTripType(type);
-  //   setShowTripType(false);
-  //   if (type === "one way") {
-  //     setEndDate("");
-  //     setSelectedEndDate(null);
-  //   }
-  // };
-
   const handleTabClick = (tab) => {
     setActiveTab(tab);
     setShowStartCalendar(false);
@@ -65,13 +51,6 @@ export default function UserPage() {
     setShowStartCalendar(!showStartCalendar);
     setShowEndCalendar(false);
   };
-
-  // const handleEndDateClick = () => {
-  //   if (tripType === "two way") {
-  //     setShowEndCalendar(!showEndCalendar);
-  //     setShowStartCalendar(false);
-  //   }
-  // };
 
   const handleDateSelect = (date, isStartDate) => {
     const formattedDate = formatDate(date);
@@ -201,9 +180,19 @@ export default function UserPage() {
     setCurrentYear(newYear);
   };
 
+
+  useEffect(() => {
+    if (!token) return;
+    fetch("https://your-api.com/protected", {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => res.json())
+      .then((data) => console.log("Protected data:", data))
+      .catch((err) => console.error("Token error:", err));
+  }, [token]);
+
   return (
     <div className="Userpage-container">
-      {/* Header */}
       <header className="UserPage_header">
         <div
           className="header-left"
@@ -211,16 +200,17 @@ export default function UserPage() {
           style={{ cursor: "pointer" }}
         >
           <FaUserCircle size={22} />
-          <span className="header-text" >Narjes Gorji</span>
+          <span className="header-text">Narjes Gorji</span>
         </div>
         <h1 className="header-title">ITRIP</h1>
         <div className="header-right">
-          <span onClick={navigateMyTrips} className="header-text">my trips</span>
+          <span onClick={navigateMyTrips} className="header-text">
+            my trips
+          </span>
           <FaSuitcase size={18} />
         </div>
       </header>
 
-      {/* Navigation Tabs */}
       <div className="nav-tabs">
         <div className="tab-div">
           <div
@@ -246,32 +236,9 @@ export default function UserPage() {
           </div>
         </div>
 
-        {/* Search Fields */}
         <div className="search-box">
-          {/* <div className="trip-type-container">
-            <button className="one-way" onClick={toggleTripType}>
-              {tripType}
-            </button>
-            {showTripType && (
-              <div className="trip-type-dropdown">
-                <div
-                  className="trip-type-option"
-                  onClick={() => selectTripType("one way")}
-                >
-                  one way
-                </div>
-                <div
-                  className="trip-type-option"
-                  onClick={() => selectTripType("two way")}
-                >
-                  two way
-                </div>
-              </div>
-            )}
-          </div> */}
           <input placeholder="origin" />
           <input placeholder="destination" />
-
           <div className="date-input-container">
             <input
               placeholder="start"
@@ -281,20 +248,6 @@ export default function UserPage() {
             />
             {showStartCalendar && renderCalendar(true)}
           </div>
-
-          {/* {tripType === "two way" && (
-            <div className="date-input-container">
-              <input
-                placeholder="end"
-                value={endDate}
-                onClick={handleEndDateClick}
-                readOnly
-              />
-              {showEndCalendar && renderCalendar(false)}
-            </div>
-          )} */}
-
-          {/* <input placeholder="p count" /> */}
           <button className="search-button" onClick={navigateToSearch_Ticket}>
             <FiSearch />
             <span>search</span>
@@ -302,7 +255,6 @@ export default function UserPage() {
         </div>
       </div>
 
-      {/* Description */}
       <p className="description">
         Looking for the best time to buy airline tickets to get a cheap flight
         to everywhere? We've got you covered anytime anywhere. <br /> Here's how
@@ -310,15 +262,6 @@ export default function UserPage() {
         in the world.
       </p>
 
-      {/* Travel Blog CTA */}
-      <div className="blog-button-container">
-        <button className="blog-button">
-          <span>travel blog</span>
-          <p>share your experience</p>
-        </button>
-      </div>
-
-      {/* Footer */}
       <footer className="UserPage_footer">
         <p>You dream it, We'll ticket it</p>
         <div className="social-icons">
