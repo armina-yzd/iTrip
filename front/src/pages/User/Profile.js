@@ -1,28 +1,22 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Profile.css";
-import {
-  FaUserCircle,
-  FaSuitcase,
-  FaPlane,
-  FaPlus,
-} from "react-icons/fa";
+import { FaUserCircle, FaSuitcase, FaPlus } from "react-icons/fa";
 import {
   FaFacebook,
   FaInstagram,
   FaXTwitter,
   FaWhatsapp,
 } from "react-icons/fa6";
+import { useAuth } from "../AuthContext"; // ✅ Import context
 
 const Profile = () => {
   const navigate = useNavigate();
-  const [tab, setTab] = useState("profile");
-  const [wallet, setWallet] = useState(2000);
+  const { token, setToken } = useAuth(); // ✅ Get token and logout handler
+  const [wallet, setWallet] = useState(0);
+  const [userInfo, setUserInfo] = useState(null);
   const [showInput, setShowInput] = useState(false);
   const [customAmount, setCustomAmount] = useState("");
-  const navigateToSignup = () => {
-    navigate("/toSignup");
-  };
 
   const handleAddCustomAmount = () => {
     const amount = parseInt(customAmount);
@@ -32,31 +26,43 @@ const Profile = () => {
     setCustomAmount("");
     setShowInput(false);
   };
-  const flightData = {
-    from: "Tehran 22:45",
-    to: "Mashhad 23:55",
-    airline: "kish air",
-    price: "200$",
-    capacity: "10",
+
+  const logout = () => {
+    setToken(null); // ✅ Clear token from memory
+    navigate("/toSignup");
   };
-  const renderFlightTimes = () => (
-    <div className="flight-times">
-      <div className="from">
-        <em>{flightData.from}</em>
-      </div>
-      {<div className="dots">................</div>}
-      <div className="to">
-        <em>{flightData.to}</em>
-      </div>
-    </div>
-  );
+
+  useEffect(() => {
+    if (!token) return;
+
+    fetch("http://iam.localhost/api/user/me", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Unauthorized");
+        return res.json();
+      })
+      .then((data) => {
+        setUserInfo(data);
+        setWallet(data.wallet || 0); // use wallet from backend if available
+      })
+      .catch((err) => {
+        console.error("Failed to fetch user data:", err);
+        logout();
+      });
+  }, [token]);
 
   return (
     <div>
+      {/* Header */}
       <header className="UserPage_header">
         <div className="header-left" style={{ cursor: "pointer" }}>
           <FaUserCircle size={22} />
-          <span className="header-text">Narjes Gorji</span>
+          <span className="header-text">
+            {userInfo?.username || "Loading..."}
+          </span>
         </div>
         <h1 className="header-title">ITRIP</h1>
         <div className="header-right">
@@ -65,76 +71,45 @@ const Profile = () => {
         </div>
       </header>
 
+      {/* Profile Content */}
       <div className="container">
-        <div className="tabs">
-          <span
-            className={tab === "profile" ? "tab active" : "tab"}
-            onClick={() => setTab("profile")}
-          >
-            profile
-          </span>
-          <span
-            className={tab === "notification" ? "tab active" : "tab"}
-            onClick={() => setTab("notification")}
-          >
-            notification
-          </span>
-        </div>
+        <div className="profile-info">
+          <p>
+            <span className="label">name :</span> {userInfo?.username || "—"}
+          </p>
+          <p>
+            <span className="label">email :</span> {userInfo?.email || "—"}
+          </p>
+          <p>
+            <span className="label">wallet :</span> {wallet}$
+          </p>
 
-        {tab === "profile" ? (
-          <div className="profile-info">
-            <p>
-              <span className="label">name :</span> Narjes Gorji
-            </p>
-            <p>
-              <span className="label">number :</span> 0902098....
-            </p>
-            <p>
-              <span className="label">wallet :</span> {wallet}$
-            </p>
-
-            {!showInput ? (
-              <button className="wallet-btn" onClick={() => setShowInput(true)}>
-                <FaPlus /> increase wallet
-              </button>
-            ) : (
-              <div className="wallet-input-wrapper">
-                <input
-                  type="number"
-                  value={customAmount}
-                  onChange={(e) => setCustomAmount(e.target.value)}
-                  placeholder="Amount"
-                  className="wallet-input"
-                />
-                <button className="done-btn" onClick={handleAddCustomAmount}>
-                  Done
-                </button>
-              </div>
-            )}
-
-            <button onClick={navigateToSignup} className="logout-btn">
-              log out
+          {!showInput ? (
+            <button className="wallet-btn" onClick={() => setShowInput(true)}>
+              <FaPlus /> increase wallet
             </button>
-          </div>
-        ) : (
-          <div className="notification-box">
-            <div className="flight-card">
-              <div className="flight-info">
-                <div className="flight-icon">
-                  <FaPlane size={20} />
-                </div>
-                {renderFlightTimes()}
-                <div className="airline">{flightData.airline}</div>
-              </div>
-
-              <div className="flight-actions">
-                <button className="choose-button">cancelled</button>
-              </div>
+          ) : (
+            <div className="wallet-input-wrapper">
+              <input
+                type="number"
+                value={customAmount}
+                onChange={(e) => setCustomAmount(e.target.value)}
+                placeholder="Amount"
+                className="wallet-input"
+              />
+              <button className="done-btn" onClick={handleAddCustomAmount}>
+                Done
+              </button>
             </div>
-          </div>
-        )}
+          )}
+
+          <button onClick={logout} className="logout-btn">
+            log out
+          </button>
+        </div>
       </div>
 
+      {/* Footer */}
       <footer className="Profile_footer">
         <p>You dream it, We'll ticket it</p>
         <div className="social-icons">

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   FaFacebook,
   FaInstagram,
@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { LuCircleFadingPlus } from "react-icons/lu";
 import { TbCircleLetterC } from "react-icons/tb";
 import "./CompanyPage.css";
+import { useAuth } from "../AuthContext";
 
 const options = [
   { name: "bus", icon: <FaBus /> },
@@ -19,13 +20,27 @@ const options = [
 
 const CompanyPage = () => {
   const [selectedFlight, setSelectedFlight] = useState(null);
+  const [selected, setSelected] = useState("airplane");
+  const [company, setCompany] = useState(null);
+  const { token } = useAuth();
   const navigate = useNavigate();
+
   const navigateToCompanyProfile = () => {
     navigate("/toCompanyProfile");
   };
   const navigateToAddService = () => {
     navigate("/toAddService");
   };
+
+  useEffect(() => {
+    if (!token) return;
+    fetch("http://iam.localhost/api/company/me", {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => res.json())
+      .then((data) => setCompany(data))
+      .catch((err) => console.error("Company fetch failed", err));
+  }, [token]);
 
   const flights = [
     {
@@ -52,13 +67,14 @@ const CompanyPage = () => {
     },
   ];
 
-  const [selected, setSelected] = useState("airplane");
   return (
     <div className="cpcompany-page-container">
       <header className="search-ticket-header">
         <div className="header-left">
           <TbCircleLetterC size={27} />
-          <span onClick={navigateToCompanyProfile} className="header-text">Kish Air</span>
+          <span onClick={navigateToCompanyProfile} className="header-text">
+            {company?.name || "Loading..."}
+          </span>
         </div>
         <h1 className="header-title">ITRIP</h1>
         <div className="header-right">
@@ -66,27 +82,24 @@ const CompanyPage = () => {
           <LuCircleFadingPlus size={25} />
         </div>
       </header>
-      <div>
-        <div className="cptransport-container">
-          <div className="cpsearch-bar">
-            <input type="text" placeholder="......." />
-            <FaSearch className="cpsearch-icon" />
-          </div>
 
-          <div className="cptransport-options">
-            {options.map((opt) => (
-              <div
-                key={opt.name}
-                className={`cptransport-option ${
-                  selected === opt.name ? "active" : ""
-                }`}
-                onClick={() => setSelected(opt.name)}
-              >
-                <div className="cpicon">{opt.icon}</div>
-                <div className="cplabel">{opt.name}</div>
-              </div>
-            ))}
-          </div>
+      <div className="cptransport-container">
+        <div className="cpsearch-bar">
+          <input type="text" placeholder="......." />
+          <FaSearch className="cpsearch-icon" />
+        </div>
+
+        <div className="cptransport-options">
+          {options.map((opt) => (
+            <div
+              key={opt.name}
+              className={`cptransport-option ${selected === opt.name ? "active" : ""}`}
+              onClick={() => setSelected(opt.name)}
+            >
+              <div className="cpicon">{opt.icon}</div>
+              <div className="cplabel">{opt.name}</div>
+            </div>
+          ))}
         </div>
       </div>
 
@@ -96,9 +109,7 @@ const CompanyPage = () => {
             key={flight.id}
             className="cpflight-summary-card"
             onClick={() =>
-              setSelectedFlight(
-                selectedFlight?.id === flight.id ? null : flight
-              )
+              setSelectedFlight(selectedFlight?.id === flight.id ? null : flight)
             }
           >
             <div className="cpflight-overview">
@@ -113,7 +124,7 @@ const CompanyPage = () => {
                 <p>Airplane: {flight.airplane}</p>
                 <p>Remaining Capacity: {flight.capacity}</p>
                 <p>Details: {flight.details}</p>
-                <button>cancle</button>
+                <button>cancel</button>
               </div>
             )}
           </div>

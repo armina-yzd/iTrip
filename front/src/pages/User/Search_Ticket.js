@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { FaUserCircle, FaSuitcase, FaPlane } from "react-icons/fa";
 import {
   FaFacebook,
@@ -7,87 +7,58 @@ import {
   FaXTwitter,
   FaWhatsapp,
 } from "react-icons/fa6";
+import { useAuth } from "../AuthContext";
 import "./Search_Ticket.css";
 
 const SearchTicket = () => {
   const navigate = useNavigate();
-  const [activeSort, setActiveSort] = useState("suggestion");
-  const [showInfo, setShowInfo] = useState(false);
-  const [showRules, setShowRules] = useState(false);
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
-  const navigateToPathInfo = () => {
-    navigate("/toPathInfo");
-  };
+  const location = useLocation();
+  const { token } = useAuth();
 
+  const { from, to, start_date, tab } = location.state || {};
+  const [results, setResults] = useState([]);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const [activeSort, setActiveSort] = useState("suggestion");
 
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth < 768);
-      if (window.innerWidth < 768) {
-        setShowInfo(false);
-        setShowRules(false);
-      }
     };
-
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const flightData = {
-    from: "Tehran 22:45",
-    to: "Mashhad 23:55",
-    airline: "kish air",
-    price: "200$",
-    capacity: "10",
-    flightNum: "1234",
-    airplane: "boeing MD-82",
-    rules: [
-      { percentage: "100%", text: "from the 12 PM before flight onwards" },
-      {
-        percentage: "85%",
-        text: "from the 12 PM of two days before flight to the 12 PM of 1 day before the flight",
-      },
-      {
-        percentage: "70%",
-        text: "from the 12 PM of 3 days before the flight to the 12 PM of 2 days before the flight",
-      },
-      {
-        percentage: "50%",
-        text: "from issuing the ticket to the 12 PM of 3 days before the flight",
-      },
-    ],
-  };
+  useEffect(() => {
+    if (!token || !tab) return;
 
-  const sortOptions = ["suggestion", "sooner", "cheapest", "expensivest"];
+    const endpointMap = {
+      airplane: "FilterAirplaneService",
+      train: "FilterTrainService",
+      bus: "FilterBusService",
+      tour: "FilterTourService",
+    };
 
-  const navigateToSignup = () => navigate("/tosignup");
-  const toggleInfo = () => {
-    setShowInfo(!showInfo);
-    setShowRules(false);
-  };
-  const toggleRules = () => {
-    setShowRules(!showRules);
-    setShowInfo(false);
-  };
+    const endpoint = endpointMap[tab];
 
-  const renderFlightTimes = () => (
-    <div className="flight-times">
-      <div className="from">
-        <em>{flightData.from}</em>
-      </div>
-      {!isMobile && <div className="dots">................</div>}
-      <div className="to">
-        <em>{flightData.to}</em>
-      </div>
-    </div>
-  );
+    fetch(`http://iam.localhost/api/filterServices/${endpoint}/?from_location=${from}&to_location=${to}&start_date=${start_date}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Fetch failed");
+        return res.json();
+      })
+      .then((data) => setResults(data))
+      .catch((err) => {
+        console.error("Failed to fetch services:", err);
+      });
+  }, [from, to, start_date, tab, token]);
 
   return (
     <div className="search-ticket-container">
       <header className="search-ticket-header">
-        <div className="header-left" onClick={navigateToSignup}>
+        <div className="header-left">
           <FaUserCircle size={22} />
-          <span className="header-text">Narjes Gorji</span>
+          <span className="header-text">Welcome</span>
         </div>
         <h1 className="header-title">ITRIP</h1>
         <div className="header-right">
@@ -99,59 +70,37 @@ const SearchTicket = () => {
       <div className="sort-bar">
         <span>sort:</span>
         <div className="sort-options">
-          {sortOptions.map((option) => (
+          {["suggestion", "sooner", "cheapest", "expensivest"].map((opt) => (
             <button
-              key={option}
-              className={activeSort === option ? "active" : ""}
-              onClick={() => setActiveSort(option)}
+              key={opt}
+              className={activeSort === opt ? "active" : ""}
+              onClick={() => setActiveSort(opt)}
             >
-              {option}
+              {opt}
             </button>
           ))}
         </div>
       </div>
 
-      <div className="flight-card">
-        <div className="flight-info">
-          <div className="flight-icon">
-            <FaPlane size={20} />
+      {results.map((item, index) => (
+        <div className="flight-card" key={index}>
+          <div className="flight-info">
+            <div className="flight-icon"><FaPlane size={20} /></div>
+            <div className="flight-times">
+              <div className="from"><em>{item.from_location} {item.takeoff_time}</em></div>
+              {!isMobile && <div className="dots">................</div>}
+              <div className="to"><em>{item.to_location} {item.landing_time}</em></div>
+            </div>
+            <div className="airline">{item.airplane_model || item.company_name}</div>
           </div>
-          {renderFlightTimes()}
-          <div className="airline">{flightData.airline}</div>
-          <div className="extra-links">
-            <button onClick={toggleInfo}>information</button>
-            <button onClick={toggleRules}>rules</button>
-          </div>
-        </div>
 
-        <div className="flight-actions">
-          <div className="price">{flightData.price}</div>
-          <button onClick={navigateToPathInfo}  className="choose-button">choose</button>
-          <div className="capacity">capacity remain: {flightData.capacity}</div>
-        </div>
-      </div>
-
-      {showInfo && (
-        <div className="info-dropdown">
-          <div className="info-content">
-            <p>flight num : {flightData.flightNum}</p>
-            <p>airplane : {flightData.airplane}</p>
+          <div className="flight-actions">
+            <div className="price">{item.price}$</div>
+            <button onClick={() => navigate("/toPathInfo")} className="choose-button">choose</button>
+            <div className="capacity">capacity: {item.capacity}</div>
           </div>
         </div>
-      )}
-
-      {showRules && (
-        <div className="rules-dropdown">
-          <div className="rules-content">
-            {flightData.rules.map((rule, index) => (
-              <div key={index} className="rule-item">
-                <span className="percentage">{rule.percentage}</span>
-                <span className="rule-text">{rule.text}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+      ))}
 
       <footer className="search-ticket-footer">
         <p>You dream it, We'll ticket it</p>

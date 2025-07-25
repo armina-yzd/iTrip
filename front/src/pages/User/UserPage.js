@@ -15,100 +15,75 @@ import {
   FaWhatsapp,
 } from "react-icons/fa6";
 import "./UserPage.css";
-import { useAuth } from "../AuthContext"; 
+import { useAuth } from "../AuthContext";
 
 export default function UserPage() {
   const navigate = useNavigate();
-  const { token } = useAuth(); 
+  const { token } = useAuth();
 
   const [activeTab, setActiveTab] = useState("airplane");
   const [showStartCalendar, setShowStartCalendar] = useState(false);
-  const [showEndCalendar, setShowEndCalendar] = useState(false);
   const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
   const [selectedStartDate, setSelectedStartDate] = useState(null);
-  const [selectedEndDate, setSelectedEndDate] = useState(null);
 
-  // ✅ NEW: Store user info fetched from /me
   const [userInfo, setUserInfo] = useState(null);
+  const [origin, setOrigin] = useState("");
+  const [destination, setDestination] = useState("");
 
   const navigateMyTrips = () => navigate("/toMyTrips");
-  const navigateToSearch_Ticket = () => navigate("/toSearch_Ticket");
+  const navigateToSearch_Ticket = () => {
+    navigate("/toSearch_Ticket", {
+      state: {
+        from: origin,
+        to: destination,
+        start_date: startDate,
+        tab: activeTab,
+      },
+    });
+  };
   const navigateToProfile = () => navigate("/toProfile");
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
     setShowStartCalendar(false);
-    setShowEndCalendar(false);
   };
 
   const handleStartDateClick = () => {
     setShowStartCalendar(!showStartCalendar);
-    setShowEndCalendar(false);
   };
 
-  const handleDateSelect = (date, isStartDate) => {
-    const formattedDate = formatDate(date);
-
-    if (isStartDate) {
-      setStartDate(formattedDate);
-      setSelectedStartDate(date);
-      setShowStartCalendar(false);
-
-      if (selectedEndDate && date > selectedEndDate) {
-        setEndDate("");
-        setSelectedEndDate(null);
-      }
-    } else {
-      setEndDate(formattedDate);
-      setSelectedEndDate(date);
-      setShowEndCalendar(false);
-    }
+  const handleDateSelect = (date) => {
+    const formatted = formatDate(date);
+    setStartDate(formatted);
+    setSelectedStartDate(date);
+    setShowStartCalendar(false);
   };
 
-  const formatDate = (date) => {
-    return date.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
-  };
+  const formatDate = (date) =>
+    date.toISOString().split("T")[0]; // yyyy-mm-dd
 
-  const renderCalendar = (isStart) => {
-    const firstDay = new Date(currentYear, currentMonth, 1);
-    const lastDay = new Date(currentYear, currentMonth + 1, 0);
-    const daysInMonth = lastDay.getDate();
-    const startingDay = firstDay.getDay();
+  const renderCalendar = () => {
+    const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+    const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
     const days = [];
 
-    for (let i = 0; i < startingDay; i++) {
-      days.push(<div key={`empty-${i}`} className="calendar-day empty"></div>);
+    for (let i = 0; i < firstDay; i++) {
+      days.push(<div key={`empty-${i}`} className="calendar-day empty" />);
     }
 
     for (let i = 1; i <= daysInMonth; i++) {
       const date = new Date(currentYear, currentMonth, i);
       const isSelected =
-        (isStart &&
-          selectedStartDate &&
-          date.toDateString() === selectedStartDate.toDateString()) ||
-        (!isStart &&
-          selectedEndDate &&
-          date.toDateString() === selectedEndDate.toDateString());
-      const isDisabled =
-        (isStart && selectedEndDate && date > selectedEndDate) ||
-        (!isStart && selectedStartDate && date < selectedStartDate);
+        selectedStartDate &&
+        date.toDateString() === selectedStartDate.toDateString();
 
       days.push(
         <div
           key={`day-${i}`}
-          className={`calendar-day ${isSelected ? "selected" : ""} ${
-            isDisabled ? "disabled" : ""
-          }`}
-          onClick={
-            !isDisabled ? () => handleDateSelect(date, isStart) : undefined
-          }
+          className={`calendar-day ${isSelected ? "selected" : ""}`}
+          onClick={() => handleDateSelect(date)}
         >
           {i}
         </div>
@@ -133,34 +108,17 @@ export default function UserPage() {
     return (
       <div className="calendar-container">
         <div className="calendar-header">
-          <button
-            onClick={() => handleMonthChange(-1)}
-            className="calendar-nav-button"
-          >
-            &lt;
-          </button>
-          <span>
-            {monthNames[currentMonth]} {currentYear}
-          </span>
-          <button
-            onClick={() => handleMonthChange(1)}
-            className="calendar-nav-button"
-          >
-            &gt;
-          </button>
-        </div>
-        <div className="calendar-weekdays">
-          {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
-            <div key={day}>{day}</div>
-          ))}
+          <button onClick={() => handleMonthChange(-1)}>&lt;</button>
+          <span>{monthNames[currentMonth]} {currentYear}</span>
+          <button onClick={() => handleMonthChange(1)}>&gt;</button>
         </div>
         <div className="calendar-days-grid">{days}</div>
       </div>
     );
   };
 
-  const handleMonthChange = (direction) => {
-    let newMonth = currentMonth + direction;
+  const handleMonthChange = (dir) => {
+    let newMonth = currentMonth + dir;
     let newYear = currentYear;
 
     if (newMonth < 0) {
@@ -175,91 +133,69 @@ export default function UserPage() {
     setCurrentYear(newYear);
   };
 
-  // ✅ Fetch user info using token
   useEffect(() => {
-    if(token) console.log(1);
-    if(!token) console.log(2);
     if (!token) return;
 
     fetch("http://iam.localhost/api/user/me", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      headers: { Authorization: `Bearer ${token}` },
     })
-      .then((res) => {
-        if (!res.ok) throw new Error("Unauthorized");
-        return res.json();
-      })
-      .then((data) => {
-        setUserInfo(data); // ✅ Set user info
-      })
+      .then((res) => res.json())
+      .then((data) => setUserInfo(data))
       .catch((err) => {
         console.error("User fetch failed:", err);
         navigate("/login");
       });
-      console.log(userInfo);
-  }, [token, navigate]);
+  }, [token]);
 
   return (
     <div className="Userpage-container">
       <header className="UserPage_header">
-        <div
-          className="header-left"
-          onClick={navigateToProfile}
-          style={{ cursor: "pointer" }}
-        >
+        <div className="header-left" onClick={navigateToProfile}>
           <FaUserCircle size={22} />
-          {/* ✅ Show user email if available */}
-          <span className="header-text">
-            {userInfo?.username || "Loading..."}
-          </span>
+          <span className="header-text">{userInfo?.username || "..."}</span>
         </div>
         <h1 className="header-title">ITRIP</h1>
         <div className="header-right">
-          <span onClick={navigateMyTrips} className="header-text">
-            my trips
-          </span>
+          <span onClick={navigateMyTrips} className="header-text">my trips</span>
           <FaSuitcase size={18} />
         </div>
       </header>
 
-      {/* Remaining UI code unchanged */}
       <div className="nav-tabs">
         <div className="tab-div">
-          <div
-            className={`tab-item ${activeTab === "bus" ? "active" : ""}`}
-            onClick={() => handleTabClick("bus")}
-          >
-            <FaBus className="tab-icon" />
-            <span>bus</span>
-          </div>
-          <div
-            className={`tab-item ${activeTab === "train" ? "active" : ""}`}
-            onClick={() => handleTabClick("train")}
-          >
-            <FaTrain className="tab-icon" />
-            <span>train</span>
-          </div>
-          <div
-            className={`tab-item ${activeTab === "airplane" ? "active" : ""}`}
-            onClick={() => handleTabClick("airplane")}
-          >
-            <FaPlane className="tab-icon" />
-            <span>airplane</span>
-          </div>
+          {["bus", "train", "airplane", "tour"].map((t) => (
+            <div
+              key={t}
+              className={`tab-item ${activeTab === t ? "active" : ""}`}
+              onClick={() => handleTabClick(t)}
+            >
+              {t === "bus" && <FaBus className="tab-icon" />}
+              {t === "train" && <FaTrain className="tab-icon" />}
+              {t === "airplane" && <FaPlane className="tab-icon" />}
+              <span>{t}</span>
+            </div>
+          ))}
         </div>
 
         <div className="search-box">
-          <input placeholder="origin" />
-          <input placeholder="destination" />
+          <input
+            placeholder="origin"
+            value={origin}
+            onChange={(e) => setOrigin(e.target.value)}
+          />
+          <input
+            placeholder="destination"
+            value={destination}
+            onChange={(e) => setDestination(e.target.value)}
+          />
           <div className="date-input-container">
             <input
-              placeholder="start"
+              placeholder="start date"
               value={startDate}
               onClick={handleStartDateClick}
               readOnly
             />
-            {showStartCalendar && renderCalendar(true)}
+            {showStartCalendar && renderCalendar()}
           </div>
           <button className="search-button" onClick={navigateToSearch_Ticket}>
             <FiSearch />
@@ -269,10 +205,7 @@ export default function UserPage() {
       </div>
 
       <p className="description">
-        Looking for the best time to buy airline tickets to get a cheap flight
-        to everywhere? We've got you covered anytime anywhere. <br /> Here's how
-        to find the best deal for flight booking no matter where you want to go
-        in the world.
+        Looking for the best time to buy tickets? We've got you covered.
       </p>
 
       <footer className="UserPage_footer">
