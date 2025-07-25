@@ -19,8 +19,7 @@ class MSClient:
     async def get_price(self, service_type: str, service_id: int) -> int:
         async with self.http_client as client:
             response = await client.get(
-                f"{self.config.MANAGE_SERVICES_URL}/api/serviceInfo/servicePrice",
-                data={"id": service_id, "service_type": service_type} 
+                f"{self.config.MANAGE_SERVICES_URL}/api/serviceInfo/servicePrice?id={service_id}&service_type={service_type}"
             )
             response.raise_for_status()
             return int(response.json())
@@ -28,8 +27,7 @@ class MSClient:
     async def get_remain(self, service_type: str, service_id: int) -> int:
         async with self.http_client as client:
             response = await client.get(
-                f"{self.config.MANAGE_SERVICES_URL}/api/serviceInfo/serviceRemain",
-                data={"id": service_id, "service_type": service_type} 
+                f"{self.config.MANAGE_SERVICES_URL}/api/serviceInfo/serviceRemain?id={service_id}&service_type={service_type}" 
             )
             response.raise_for_status()
             return int(response.json())
@@ -37,8 +35,7 @@ class MSClient:
     async def get_ticket_detail(self, service_type: str, service_id: int) -> ViewTicket:
         async with self.http_client as client:
             response = await client.get(
-                f"{self.config.MANAGE_SERVICES_URL}/api/serviceInfo/serviceViewInfoo",
-                data={"id": service_id, "service_type": service_type} 
+                f"{self.config.MANAGE_SERVICES_URL}/api/serviceInfo/serviceViewInfoo?id={service_id}&service_type={service_type}"
             )
             response.raise_for_status()
             return ViewTicket(**response.json())
