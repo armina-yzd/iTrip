@@ -87,15 +87,25 @@ async def delete_file(
             detail=str(e)
         )
     
-@router.get("/ticket/{ticket_id}")
+@router.get("/ticket/{ticket_id}", response_model=List[MediaDetails])
 async def get_media_by_ticket_id(
     ticket_id: int,
     media_service: MediaService = Depends(get_media_service)
 ):
     try:
         media_files = await media_service.get_media_by_ticket(ticket_id)
-        return media_files
-        
+        return [
+            MediaDetails(
+                _id=media.id,
+                filename=media.filename,
+                content_type=media.content_type,
+                size=media.size,
+                upload_date=media.upload_date,
+                ticket_id=media.ticket_id,
+                metadata=media.metadata
+            )
+            for media in media_files
+        ]
     except HTTPException:
         raise
     except Exception as e:

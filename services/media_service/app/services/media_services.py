@@ -1,6 +1,6 @@
 from fastapi import Depends, HTTPException, status
 from app.domain.models.media import MediaFile
-from app.infrastructure.repositories.media_repo import MediaRepository
+from app.infrastructure.repositories.mongodb_repository import MongoDBMediaRepository
 from typing import Annotated, List, Tuple
 
 from app.infrastructure.clients.user_ticket_client import UTClient
@@ -8,7 +8,7 @@ from app.infrastructure.clients.user_ticket_client import UTClient
 class MediaService:
     def __init__(
             self, 
-            media_repository: MediaRepository,
+            media_repository: MongoDBMediaRepository,
             ut_client: Annotated[UTClient, Depends()]
             ):
         self.ut_client = ut_client

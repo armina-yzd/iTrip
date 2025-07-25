@@ -1,6 +1,5 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from typing import Annotated
-from sqlalchemy.orm import Session
 from typing import List
 from fastapi.security import OAuth2PasswordRequestForm
 
@@ -10,12 +9,9 @@ from app.domain.schemas.company_schema import (
     CompanyLogIn,
     CompanyResponseOtp,
     CompanyOtp,
-    VerifyOtp,
-    VerifyOtpResponse,
-    VerifyEmailResponse
+    VerifyOtp
 )
 from app.domain.schemas.token_schema import Token
-from app.core.db.database import get_db
 from app.services.auth.auth import AuthService, get_current_admin , get_current_company
 from app.services.company.company_register import CompanyRegister
 from app.services.company.company_service import CompanyService

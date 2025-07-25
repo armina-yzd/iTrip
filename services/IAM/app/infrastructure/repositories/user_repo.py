@@ -1,5 +1,5 @@
 from typing import Annotated
-from fastapi import Depends
+from fastapi import Depends, HTTPException,status
 from sqlalchemy.orm import Session
 from app.core.db.database import get_db
 from app.domain.models.user import User
@@ -46,4 +46,16 @@ class UserRepository:
             self.db.refresh(user)
         return user
 
+    def change_user_wallet_admin(self, id: int, new_wallet: int) -> User:
+        user = self.db.query(User).filter(User.id == id).first()
+        if user.wallet + new_wallet<0:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, 
+                detail="wallet cant be less than zero"
+            )
+        if user:
+            user.wallet = user.wallet + new_wallet
+            self.db.commit()
+            self.db.refresh(user)
+        return user
     

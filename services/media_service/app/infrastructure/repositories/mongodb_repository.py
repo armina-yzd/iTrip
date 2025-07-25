@@ -13,11 +13,15 @@ class MongoDBMediaRepository(MediaRepository):
     
     async def save(self, media: MediaFile, file_data: bytes) -> MediaFile:
         metadata = media.dict(exclude={"id"})
+
+        # Upload the file to GridFS with metadata
         file_id = await self.fs.upload_from_stream(
             media.filename,
             file_data,
             metadata=metadata
         )
+
+        # Convert the file_id to string and update the media object
         media.id = str(file_id)
         return media
 
@@ -50,22 +54,20 @@ class MongoDBMediaRepository(MediaRepository):
         try:
             cursor = self.db.fs.files.find({"metadata.ticket_id": ticket_id})
             media_files = []
-
+    
             async for document in cursor:
-
                 media = MediaFile(
-                    id=str(document["_id"]),
+                    _id=str(document["_id"]),  # Explicitly set _id
                     filename=document["filename"],
-                    content_type=document["metadata"].get("content_type", ""),
+                    content_type=document["metadata"]["content_type"],
                     size=document["length"],
-                    upload_date=document["uploadDate"],
+                    upload_date=document["metadata"]["upload_date"],
                     ticket_id=document["metadata"]["ticket_id"],
                     metadata=document["metadata"].get("metadata", {})
                 )
                 media_files.append(media)
-
+    
             return media_files
-
         except Exception as e:
             print(f"Error getting media by ticket_id {ticket_id}: {str(e)}")
             raise
