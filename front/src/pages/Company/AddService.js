@@ -7,21 +7,24 @@ import {
   FaWhatsapp,
 } from "react-icons/fa6";
 import { FaBus, FaTrain, FaPlane } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
 import { LuCircleFadingPlus } from "react-icons/lu";
 import { TbCircleLetterC } from "react-icons/tb";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../AuthContext";
 
 const AddService = () => {
+  const { token } = useAuth();
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     transportType: "airplane",
-    from: "",
-    to: "",
-    date: "",
-    landingTime: "",
-    endTime: "",
-    flightNum: "",
-    airplaneModel: "",
-    bar: "",
+    from_location: "",
+    to_location: "",
+    start_date: "",
+    start_time: "",
+    vehicle_num: "",
+    vehicle_type: "",
+    detail: "",
     price: "",
     capacity: 100,
   });
@@ -34,9 +37,49 @@ const AddService = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert("Transport Info Submitted:\n" + JSON.stringify(formData, null, 2));
+
+    const payload = {
+      from_location: formData.from_location,
+      to_location: formData.to_location,
+      start_date: formData.start_date,
+      start_time: formData.start_time,
+      price: Number(formData.price),
+      capacity: Number(formData.capacity),
+      vehicle_num: formData.vehicle_num || undefined,
+      vehicle_type: formData.vehicle_type || undefined,
+      detail: formData.detail || undefined,
+    };
+
+    const endpointMap = {
+      airplane: "addAirplaneService",
+      train: "addTrainService",
+      bus: "addBusService",
+      tour: "addTourService",
+    };
+
+    const selectedEndpoint = endpointMap[formData.transportType];
+
+    try {
+      const response = await fetch(`http://manage_services.localhost/api/addServices/${selectedEndpoint}/`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) throw new Error("Failed to add service");
+
+      await response.json();
+      alert("Service added successfully!");
+      navigate("/toCompanyPage"); // ✅ return to dashboard
+    } catch (err) {
+      console.error("Error adding service:", err);
+      alert("Error while adding service");
+    }
   };
 
   return (
@@ -56,7 +99,6 @@ const AddService = () => {
       <div className="flight-form-wrapper">
         <h2 className="flight-title">Transportation Information</h2>
         <form className="flight-form-body" onSubmit={handleSubmit}>
-          {/* Transport Type Selection */}
           <div className="flight-input-row">
             <label className="flight-label">Transport Type:</label>
             <select
@@ -71,13 +113,12 @@ const AddService = () => {
             </select>
           </div>
 
-          {/* From / To / Date / Time / Details */}
           <div className="flight-input-row">
             <label className="flight-label">From:</label>
             <input
               type="text"
-              name="from"
-              value={formData.from}
+              name="from_location"
+              value={formData.from_location}
               onChange={handleChange}
               className="flight-input-box"
               required
@@ -88,8 +129,8 @@ const AddService = () => {
             <label className="flight-label">To:</label>
             <input
               type="text"
-              name="to"
-              value={formData.to}
+              name="to_location"
+              value={formData.to_location}
               onChange={handleChange}
               className="flight-input-box"
               required
@@ -100,32 +141,22 @@ const AddService = () => {
             <label className="flight-label">Date:</label>
             <input
               type="date"
-              name="date"
-              value={formData.date}
+              name="start_date"
+              value={formData.start_date}
               onChange={handleChange}
               className="flight-input-box"
               required
             />
           </div>
+
+        
 
           <div className="flight-input-row">
             <label className="flight-label">Landing Time:</label>
             <input
               type="time"
-              name="landingTime"
-              value={formData.landingTime}
-              onChange={handleChange}
-              className="flight-input-box"
-              required
-            />
-          </div>
-
-          <div className="flight-input-row">
-            <label className="flight-label">End Time:</label>
-            <input
-              type="time"
-              name="endTime"
-              value={formData.endTime}
+              name="start_time"
+              value={formData.start_time}
               onChange={handleChange}
               className="flight-input-box"
               required
@@ -136,8 +167,8 @@ const AddService = () => {
             <label className="flight-label">Flight Number:</label>
             <input
               type="text"
-              name="flightNum"
-              value={formData.flightNum}
+              name="vehicle_num"
+              value={formData.vehicle_num}
               onChange={handleChange}
               className="flight-input-box"
             />
@@ -147,19 +178,19 @@ const AddService = () => {
             <label className="flight-label">Airplane Model:</label>
             <input
               type="text"
-              name="airplaneModel"
-              value={formData.airplaneModel}
+              name="vehicle_type"
+              value={formData.vehicle_type}
               onChange={handleChange}
               className="flight-input-box"
             />
           </div>
 
           <div className="flight-input-row">
-            <label className="flight-label">Bar:</label>
+            <label className="flight-label">detail:</label>
             <input
               type="text"
-              name="bar"
-              value={formData.bar}
+              name="detail"
+              value={formData.detail}
               onChange={handleChange}
               className="flight-input-box"
             />
@@ -198,6 +229,7 @@ const AddService = () => {
           </button>
         </form>
       </div>
+
       <footer className="cpCompanyPage-footer">
         <p>You dream it, We'll ticket it</p>
         <div className="cpsocial-icons">

@@ -22,50 +22,43 @@ const CompanyPage = () => {
   const [selectedFlight, setSelectedFlight] = useState(null);
   const [selected, setSelected] = useState("airplane");
   const [company, setCompany] = useState(null);
+  const [services, setServices] = useState([]);
   const { token } = useAuth();
   const navigate = useNavigate();
 
-  const navigateToCompanyProfile = () => {
-    navigate("/toCompanyProfile");
-  };
-  const navigateToAddService = () => {
-    navigate("/toAddService");
+  const navigateToCompanyProfile = () => navigate("/toCompanyProfile");
+  const navigateToAddService = () => navigate("/toAddService");
+
+  const endpointMap = {
+    airplane: "AirplaneServiceCompany",
+    train: "TrainServiceCompany",
+    bus: "BusServiceCompany",
+    tour: "TourServiceCompany", // if needed later
   };
 
   useEffect(() => {
     if (!token) return;
+
+    // get company info
     fetch("http://iam.localhost/api/company/me", {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())
-      .then((data) => setCompany(data))
+      .then(setCompany)
       .catch((err) => console.error("Company fetch failed", err));
   }, [token]);
 
-  const flights = [
-    {
-      id: 1,
-      from: "Tehran 06:00",
-      to: "Shiraz 07:15",
-      airline: "Kish Air",
-      price: "180$",
-      capacity: 5,
-      flightNum: "IR101",
-      airplane: "Airbus A320",
-      details: "Gate A4, Terminal 1. Meals included.",
-    },
-    {
-      id: 2,
-      from: "Isfahan 08:45",
-      to: "Tabriz 10:10",
-      airline: "Kish Air",
-      price: "190$",
-      capacity: 3,
-      flightNum: "MA202",
-      airplane: "Boeing 737",
-      details: "Gate B1, Terminal 2. No meals.",
-    },
-  ];
+  useEffect(() => {
+    if (!token || !selected) return;
+
+    const endpoint = endpointMap[selected];
+    fetch(`http://manage_services.localhost/api/getServices/${endpoint}/`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => res.json())
+      .then(setServices)
+      .catch((err) => console.error("Service fetch failed", err));
+  }, [token, selected]);
 
   return (
     <div className="cpcompany-page-container">
@@ -78,14 +71,16 @@ const CompanyPage = () => {
         </div>
         <h1 className="header-title">ITRIP</h1>
         <div className="header-right">
-          <span onClick={navigateToAddService} className="header-text">Add service</span>
+          <span onClick={navigateToAddService} className="header-text">
+            Add service
+          </span>
           <LuCircleFadingPlus size={25} />
         </div>
       </header>
 
       <div className="cptransport-container">
         <div className="cpsearch-bar">
-          <input type="text" placeholder="......." />
+          <input type="text" placeholder="Search..." />
           <FaSearch className="cpsearch-icon" />
         </div>
 
@@ -104,27 +99,26 @@ const CompanyPage = () => {
       </div>
 
       <div className="cpcompany-page-content">
-        {flights.map((flight) => (
+        {services.map((service) => (
           <div
-            key={flight.id}
+            key={service.id}
             className="cpflight-summary-card"
             onClick={() =>
-              setSelectedFlight(selectedFlight?.id === flight.id ? null : flight)
+              setSelectedFlight(selectedFlight?.id === service.id ? null : service)
             }
           >
             <div className="cpflight-overview">
               <FaPlane />
-              <em>{flight.from}</em> → <em>{flight.to}</em>
-              <span>{flight.airline}</span>
-              <span>{flight.price}</span>
+              <em>{service.from_location} {service.takeoff_time}</em> →
+              <em>{service.to_location} {service.landing_time}</em>
+              <span>{service.airplane_model || service.company_name}</span>
+              <span>{service.price}$</span>
             </div>
-            {selectedFlight?.id === flight.id && (
+            {selectedFlight?.id === service.id && (
               <div className="cpflight-detail-frame">
-                <p>Flight Number: {flight.flightNum}</p>
-                <p>Airplane: {flight.airplane}</p>
-                <p>Remaining Capacity: {flight.capacity}</p>
-                <p>Details: {flight.details}</p>
-                <button>cancel</button>
+                <p>Flight Number: {service.flight_num}</p>
+                <p>Airplane: {service.airplane_model}</p>
+                <p>Remaining Capacity: {service.capacity}</p>
               </div>
             )}
           </div>
