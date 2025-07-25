@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./Signup_user.module.css";
 import { FiArrowLeft } from "react-icons/fi";
+import { useAuth } from "./AuthContext";
 
 function SignupUser() {
   const [formData, setFormData] = useState({
@@ -13,6 +14,7 @@ function SignupUser() {
   const [showOtpInput, setShowOtpInput] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { setToken } = useAuth(); // ✅ use token setter from context
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -60,8 +62,13 @@ function SignupUser() {
       const data = await response.json();
       console.log("Account verified:", data);
 
-      alert("Account successfully created!");
-      navigate("/toUserPage"); 
+      // ✅ Save token after successful account creation
+      if (data.access_token) {
+        setToken(data.access_token);
+        navigate("/toUserPage");
+      } else {
+        alert("Signup succeeded, but no token returned.");
+      }
     } catch (err) {
       console.error(err);
       alert("Verification failed.");

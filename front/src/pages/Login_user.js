@@ -2,19 +2,21 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./Login_user.module.css";
 import { FiArrowLeft } from "react-icons/fi";
+import { useAuth } from "./AuthContext"; 
 
 function LoginUser() {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
+
   const navigate = useNavigate();
+  const { setToken } = useAuth(); // ✅ Use token setter from context
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -30,14 +32,13 @@ function LoginUser() {
           password: formData.password,
         }),
       });
-      console.log(response);
+
       if (!response.ok) throw new Error("Login failed");
 
       const data = await response.json();
       console.log("Token:", data.access_token);
 
-      // Save token in localStorage or context:
-      localStorage.setItem("access_token", data.access_token);
+      setToken(data.access_token); // ✅ Store token in memory (context)
 
       navigate("/toUserPage");
     } catch (error) {
@@ -48,7 +49,6 @@ function LoginUser() {
 
   const navigateToCompany = () => navigate("/tocompany");
   const navigateback = () => navigate("/tosignup");
-  const navigatetoUserPage = () => navigate("/toUserPage");
 
   return (
     <div className={styles.Login_user_container}>

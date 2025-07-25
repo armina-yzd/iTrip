@@ -31,15 +31,12 @@ export default function UserPage() {
   const [selectedStartDate, setSelectedStartDate] = useState(null);
   const [selectedEndDate, setSelectedEndDate] = useState(null);
 
-  const navigateMyTrips = () => {
-    navigate("/toMyTrips");
-  };
-  const navigateToSearch_Ticket = () => {
-    navigate("/toSearch_Ticket");
-  };
-  const navigateToProfile = () => {
-    navigate("/toProfile");
-  };
+  // ✅ NEW: Store user info fetched from /me
+  const [userInfo, setUserInfo] = useState(null);
+
+  const navigateMyTrips = () => navigate("/toMyTrips");
+  const navigateToSearch_Ticket = () => navigate("/toSearch_Ticket");
+  const navigateToProfile = () => navigate("/toProfile");
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
@@ -84,9 +81,7 @@ export default function UserPage() {
     const lastDay = new Date(currentYear, currentMonth + 1, 0);
     const daysInMonth = lastDay.getDate();
     const startingDay = firstDay.getDay();
-
     const days = [];
-    let day = 1;
 
     for (let i = 0; i < startingDay; i++) {
       days.push(<div key={`empty-${i}`} className="calendar-day empty"></div>);
@@ -180,16 +175,30 @@ export default function UserPage() {
     setCurrentYear(newYear);
   };
 
-
+  // ✅ Fetch user info using token
   useEffect(() => {
+    if(token) console.log(1);
+    if(!token) console.log(2);
     if (!token) return;
-    fetch("https://your-api.com/protected", {
-      headers: { Authorization: `Bearer ${token}` },
+
+    fetch("http://iam.localhost/api/user/me", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     })
-      .then((res) => res.json())
-      .then((data) => console.log("Protected data:", data))
-      .catch((err) => console.error("Token error:", err));
-  }, [token]);
+      .then((res) => {
+        if (!res.ok) throw new Error("Unauthorized");
+        return res.json();
+      })
+      .then((data) => {
+        setUserInfo(data); // ✅ Set user info
+      })
+      .catch((err) => {
+        console.error("User fetch failed:", err);
+        navigate("/login");
+      });
+      console.log(userInfo);
+  }, [token, navigate]);
 
   return (
     <div className="Userpage-container">
@@ -200,7 +209,10 @@ export default function UserPage() {
           style={{ cursor: "pointer" }}
         >
           <FaUserCircle size={22} />
-          <span className="header-text">Narjes Gorji</span>
+          {/* ✅ Show user email if available */}
+          <span className="header-text">
+            {userInfo?.username || "Loading..."}
+          </span>
         </div>
         <h1 className="header-title">ITRIP</h1>
         <div className="header-right">
@@ -211,6 +223,7 @@ export default function UserPage() {
         </div>
       </header>
 
+      {/* Remaining UI code unchanged */}
       <div className="nav-tabs">
         <div className="tab-div">
           <div
