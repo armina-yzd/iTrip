@@ -61,8 +61,7 @@ async def service_remain(
     
 @router.get("/serviceViewInfo",response_model=list[ViewTicket])
 async def service_info(
-    id: int,
-    service_type: str, 
+    service_info: list[GetInfo],
     bus_service: Annotated[BusSService, Depends()],
     airplane_service: Annotated[AirplaneSService, Depends()],
     train_service: Annotated[TrainSService, Depends()],
