@@ -25,23 +25,23 @@ class MongoDBMediaRepository(MediaRepository):
         media.id = str(file_id)
         return media
 
-    # async def get_by_id(self, file_id: str) -> tuple[MediaFile, bytes]:
-    #     try:
-    #         file_object = await self.fs.open_download_stream(ObjectId(file_id))
-    #         file_data = await file_object.read()
-    #         metadata = file_object.metadata
-    #         media = MediaFile(
-    #             id=file_id,
-    #             filename=metadata["filename"],
-    #             content_type=metadata["content_type"],
-    #             size=metadata["size"],
-    #             upload_date=metadata["upload_date"],
-    #             ticket_id=metadata["ticket_id"], 
-    #             metadata=metadata.get("metadata", {})
-    #         )
-    #         return media, file_data
-    #     except Exception as e:
-    #         raise FileNotFoundError(f"File with id {file_id} not found")
+    async def get_by_id(self, file_id: str) -> tuple[MediaFile, bytes]:
+        try:
+            file_object = await self.fs.open_download_stream(ObjectId(file_id))
+            file_data = await file_object.read()
+            metadata = file_object.metadata
+            media = MediaFile(
+                id=file_id,
+                filename=metadata["filename"],
+                content_type=metadata["content_type"],
+                size=metadata["size"],
+                upload_date=metadata["upload_date"],
+                ticket_id=metadata["ticket_id"], 
+                metadata=metadata.get("metadata", {})
+            )
+            return media, file_data
+        except Exception as e:
+            raise FileNotFoundError(f"File with id {file_id} not found")
     
     async def delete(self, file_id: str) -> bool:
         try:
