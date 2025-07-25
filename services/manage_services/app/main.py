@@ -9,12 +9,12 @@ from app.api.filter_services.service_info import router as service_info
 app = FastAPI()
 
 
-# app.add_middleware(
-#     CORSMiddleware,
-#     allow_origins=["*"],
-#     allow_methods=["*"],
-#     allow_headers=["*"],
-# )
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 in_db()
 app.include_router(add_services, prefix="/api")
